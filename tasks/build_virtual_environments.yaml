@@ -44,6 +44,8 @@
     repo: '{{ repo_url }}'
     dest: '/tmp/builder/checkout/{{ project }}/{{ version }}'
     version: '{{ version }}'
+    clone: yes
+    update: yes
   become: True
 
 - name: " build_virtual_environments | Cleanup - Recursively remove directory ({{ project }} - {{ version }})"
