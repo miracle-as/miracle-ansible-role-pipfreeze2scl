@@ -1,0 +1,188 @@
+- name: Dump all variables
+  action: template src=dumpall.j2 dest=/tmp/builder.ansible_dump.all
+
+
+
+
+- name: build_virtual_environments | check if we're building on a supported os
+  assert:
+    fail_msg: "{{ role_name }} only supports ubuntu versions 16, 18, 20 and centos versions 6, 7!"
+    success_msg: "{{ role_name }} supports {{ ansible_distribution }} version {{ ansible_distribution_version }}"
+    quiet: "{{ not ansible_check_mode }}"
+    that:
+      ( ansible_distribution == "Ubuntu" and ansible_distribution_version|int in [16, 18, 20] )
+      or ( ansible_distribution == "CentOS" and ansible_distribution_major_version|int in [7, 8] )
+      or ( ansible_distribution|lower == "redhat" and ansible_distribution_major_version|int in [8] )
+
+- name: build_virtual_environments | ansible create directory example
+  file:
+    path: /var/lib/venv/openstack/venv/rpmvenv/
+    state: directory
+    recurse: yes
+
+- name: build_virtual_environments | Create a file for ldconfig to load to ensure access to /usr/local/lib
+  ansible.builtin.copy:
+    src: lib.local.usr.conf
+    dest: /etc/ld.so.conf.d/local.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: build_virtual_environments | create builder script
+  ansible.builtin.copy:
+    src: build-openstack-rpms.sh
+    dest: /usr/local/bin/buid-openstack-rpms.sh
+    owner: root
+    group: root
+    mode: '0755'    
+
+- name: build_virtual_environments | create a pip downloader
+  ansible.builtin.copy:
+    src: pip-downloader.py
+    dest: /usr/local/bin/pip-downloader.py
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: build_virtual_environments | run ldconfig in a shell
+  ansible.builtin.shell: ldconfig
+  become: True
+
+- name: build_virtual_environments | Install tools on build servers
+  ansible.builtin.package:
+    name:  '{{ item  }}'
+    state: present
+  with_items:
+    - "git"
+    - "python3-pip"
+    - "python3-devel"
+    - "make" 
+    - "autoconf" 
+    - "automake" 
+    - "libtool" 
+    - "gcc"
+    - "zlib-devel"
+    - "rpm-build"
+    - "tree"
+    - "python3-virtualenv"
+      #    - "liberasurecode-devel"
+
+
+##########################################################
+# Common prereqs for running openstack
+#
+# liberasurecode
+# --------------
+# https://github.com/openstack/liberasurecode.git to be complied
+#
+#
+###########################################################
+
+- name: build_virtual_environments | clone liberasurecode git repo
+  ansible.builtin.git:
+    repo: https://github.com/openstack/liberasurecode.git
+    dest: /tmp/builder/checkout/liberasurecode
+
+- name: build_virtual_environments | run autogen
+  ansible.builtin.command: ./autogen.sh
+  args:
+    chdir: /tmp/builder/checkout/liberasurecode
+  become: True
+
+- name: build_virtual_environments | run configure
+  ansible.builtin.command: ./configure
+  args:
+    chdir: /tmp/builder/checkout/liberasurecode
+  become: True
+
+- name: build_virtual_environments | run make
+  ansible.builtin.command: make
+  args:
+    chdir: /tmp/builder/checkout/liberasurecode
+  become: True
+
+- name: build_virtual_environments | run make test
+  ansible.builtin.command: make test
+  args:
+    chdir: /tmp/builder/checkout/liberasurecode
+  become: True
+
+- name: build_virtual_environments | run make install
+  ansible.builtin.command: make install
+  args:
+    chdir: /tmp/builder/checkout/liberasurecode
+  become: True
+
+- name: build_virtual_environments | run pip update
+  ansible.builtin.command: pip3 install --upgrade pip
+  become: True
+
+- name: build_virtual_environments | run pip update
+  ansible.builtin.command: pip3 install --upgrade virtualenv
+  become: True
+
+- name: build_virtual_environments | run pip install rpmvenv
+  ansible.builtin.command: pip3 install rpmvenv
+  become: True
+
+- name: ' build_virtual_environments | clone git repo ({{ ostack_component }} - {{ ostack_version }})'
+  ansible.builtin.git:
+    repo: 'https://github.com/openstack/{{ ostack_component }}.git'
+    dest: '/tmp/builder/checkout/{{ ostack_component }}/{{ ostack_version }}'
+    version: '{{ ostack_version }}'
+
+- name: " build_virtual_environments | Cleanup - Recursively remove directory ({{ ostack_component }} - {{ ostack_version }})"
+  ansible.builtin.file:
+    path: '/tmp/builder/virtualenvironments/{{ ostack_component }}/{{ ostack_version }}/venv'
+    state: absent
+
+- name: " build_virtual_environments | Build a virtual environment face 1 init virtual env  ({{ ostack_component }} - {{ ostack_version }})"
+  pip:
+    name: pip
+    virtualenv: '/var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/venv'
+    state: latest
+
+- name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ ostack_component }} - {{ ostack_version }})"
+  pip:
+    name: ['setuptools', 'setuptools-rust', 'wheel']
+    virtualenv: '/var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/venv'
+    state: latest
+
+- name: " build_virtual_environments | Build a virtual environment for ({{ ostack_component }} - {{ ostack_version }})"
+  pip:
+    requirements: '/tmp/builder/checkout/{{ ostack_component }}/{{ ostack_version }}/requirements.txt'
+    virtualenv: '/var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/venv'
+
+- name:  build_virtual_environments | Template a file to rpmvenv.json
+  ansible.builtin.template:
+    src: templates/rpmvenv.json.j2
+    dest: '/var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/rmpvenv.json'
+    force: yes
+
+- name:  build_virtual_environments | create the final requierements.txt file
+  shell: /var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/venv/bin/pip freeze >   /var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/requirements.txt
+
+- name: Store file into /tmp/ostack/{{ ostack_version }}/{{ ostack_component }}.requirements.txt
+  ansible.builtin.fetch:
+    src:  /var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/requirements.txt
+    dest: /tmp/ostack/{{ ostack_version }}/{{ ostack_component }}.requirements.txt
+    
+- name: " build_virtual_environments | Build a virtual for building packages face 1"
+  pip:
+    name: pip
+    virtualenv: '/var/lib/openstack/venv/builder/venv'
+    state: latest
+
+- name: " build_virtual_environments | Build a virtual for building packages face 2 "
+  pip:
+    name: ['setuptools', 'setuptools-rust', 'wheel',  'requirements-parser', 'requests' , 'pyp2rpm'  ]
+    virtualenv: '/var/lib/openstack/venv/builder/venv'
+    state: latest
+
+#Download all the sources for building rpms
+
+- name: " build_virtual_environments |  Running downloader script to collect python sources"
+  ansible.builtin.shell: /var/lib/openstack/venv/builder/venv/bin/python /usr/local/bin/pip-downloader.py
+  args:
+    chdir: /var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}
+

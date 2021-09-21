@@ -1,0 +1,7 @@
+- include: redhat.yaml
+  when: ( ansible_distribution|lower == "redhat" and ansible_distribution_major_version|int in [8] )
+
+- include: build_virtual_environments.yaml
+- include: build_rpm_packages
+- include: provision_rpm_packages
+

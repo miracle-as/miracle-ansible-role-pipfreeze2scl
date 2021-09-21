@@ -1,0 +1,12 @@
+- name: download_pip_sources
+  include: download_pip_sources.yaml
+
+- name: create_specfiles
+  include: create_specfiles
+
+- name: create_scl_specfiles
+  include: create_scl_specfiles.yaml
+
+- name: build_rpms
+  include: build_rpms.yaml
+
