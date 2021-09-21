@@ -33,7 +33,8 @@
     - "tree"
     - "python3-virtualenv"
       #    - "liberasurecode-devel"
-
+- name: Dump varianble
+  msg: "{{ repo_url }}"
 
 - name: 'build_virtual_environments | clone git repo ({{ project  }} - {{ version }})'
   ansible.builtin.git:
