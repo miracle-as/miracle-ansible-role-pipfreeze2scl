@@ -22,7 +22,7 @@
   with_items:
     - "git"
     - "python3-pip"
-    - "python-devel"
+    - "platform-python-devel"
     - "make" 
     - "autoconf" 
     - "automake" 
