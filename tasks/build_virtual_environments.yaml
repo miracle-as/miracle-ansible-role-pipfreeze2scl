@@ -35,7 +35,7 @@
       #    - "liberasurecode-devel"
 
 
-- name: ' build_virtual_environments | clone git repo ({{ project  }} - {{ version }})'
+- name: 'build_virtual_environments | clone git repo ({{ project  }} - {{ version }})'
   ansible.builtin.git:
     repo: '{{ repo_url }}'
     dest: '/tmp/builder/checkout/{{ project }}/{{ version }}'
