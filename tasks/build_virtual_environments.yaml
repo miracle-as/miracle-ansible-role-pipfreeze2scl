@@ -7,14 +7,6 @@
     state: directory
     recurse: yes
 
-- name: build_virtual_environments | Create a file for ldconfig to load to ensure access to /usr/local/lib
-  ansible.builtin.copy:
-    src: lib.local.usr.conf
-    dest: /etc/ld.so.conf.d/local.conf
-    owner: root
-    group: root
-    mode: '0644'
-
 - name: build_virtual_environments | create a pip downloader
   ansible.builtin.copy:
     src: pip-downloader.py
