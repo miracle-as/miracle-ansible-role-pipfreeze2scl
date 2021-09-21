@@ -40,6 +40,7 @@
     repo: '{{ repo_url }}'
     dest: '/tmp/builder/checkout/{{ project }}/{{ version }}'
     version: '{{ version }}'
+  become: True
 
 - name: " build_virtual_environments | Cleanup - Recursively remove directory ({{ project }} - {{ version }})"
   ansible.builtin.file:
