@@ -1,0 +1,8 @@
+- name: Copy template
+  ansible.builtin.template:
+    src: metascl.spec.j2
+    dest: /root/metascl.spec
+    owner: root
+    group: root
+    mode: '0644'
+        
