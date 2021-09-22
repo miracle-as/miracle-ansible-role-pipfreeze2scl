@@ -20,7 +20,7 @@
     src: pip-downloader.py
     dest: /usr/local/bin/pip-downloader.py
     owner: root
-    group: root½
+    group: root
     mode: '0755'
 
 
