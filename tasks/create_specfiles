@@ -9,7 +9,7 @@
 - name: create_specfiles
   ansible.builtin.shell: python3 setup.py bdist_rpm --spec-only
   args:
-    chdir: {{ mydir.path }}
+    chdir: "{{ mydir.path }}"
   become: True
   loop: "{{ sources.files }}" 
   loop_control:
