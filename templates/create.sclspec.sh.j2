@@ -27,6 +27,11 @@ do
           do
             pip install $MODULE
           done
+          for PKGDIR in `cat  /tmp/std.log |grep "error: package directory" |awk -F"'" '{ print $2 }'`
+          do
+            mkdir $PKGDIR
+            touch ${PKGDIR}/__init__.py
+          done
         fi
       done
 
