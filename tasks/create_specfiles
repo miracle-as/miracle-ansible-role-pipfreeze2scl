@@ -1,8 +1,8 @@
 - name: 
   find:
     paths: /root/rpmbuild/SOURCES
-    recurse: no
-    depth: 1
+    recurse: yes
+    depth: 2
     file_type: directory
   register: sources
 
