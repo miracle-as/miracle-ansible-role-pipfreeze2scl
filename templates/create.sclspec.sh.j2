@@ -34,8 +34,8 @@ do
       then
         cat dist/*.spec > $DIR.spec
         spec2scl $DIR.spec > $DIR.scl.pre.spec
-        awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/#'\"" ; next }1' $DIR.scl.pre.spec \
-          | sed 's#root=$RPM_BUILD_ROOT#$RPM_BUILD_ROOT/opt/miracle/flask#' > $DIR.scl.spec
+        awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\"" ; next }1' $DIR.scl.pre.spec \
+          | sed 's#root=$RPM_BUILD_ROOT#$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}#' > $DIR.scl.spec
       fi
     fi
     cd -
