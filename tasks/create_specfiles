@@ -21,3 +21,8 @@
     mode: 644
     force: yes
   become: True
+
+- name: create_specfiles | Touch /root/rpmbuild/SOURCES/LICENSE
+  shell: touch /root/rpmbuild/SOURCES/LICENSE
+  become: True
+  
