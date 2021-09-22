@@ -3,8 +3,9 @@ python3 -m venv /tmp/venv >/dev/null 2>&1
 source /tmp/venv/bin/activate >/dev/null 2>&1
 pip install --upgrade pip >/dev/null 2>&1
 
-for DIR in `find /root/rpmbuild/SOURCES -maxdepth 1 -type d`
+for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
+    echo $DIR
     cd $DIR >/dev/null 2>&1
     MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
     python3 -m venv venv >/dev/null 2>&1
