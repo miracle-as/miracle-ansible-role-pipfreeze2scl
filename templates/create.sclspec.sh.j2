@@ -37,8 +37,8 @@ do
         spec2scl $DIR.spec > $DIR.scl.pre.spec
         awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\"" ; next }1' $DIR.scl.pre.spec \
           | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}# INSTALLED_FILES' \
-          | sed "s/Source0:/Source0: ${MYPKG}.tar.gz\n#/"  \
-          | sed "s/\%setup -n /\%setup -n ${MYPKG}.tar.gz\n#/" > $DIR.scl.spec
+          | sed "s/Source0:/Source0: ${MYPKG}.tar.gz\n#/" > $DIR.scl.spec.tmp
+        cat $DIR.scl.spec.tmp | sed "s/\setup -n /setup -n ${MYPKG}.tar.gz\n#/" > $DIR.scl.spec
       fi
     fi
     cd -
