@@ -3,7 +3,7 @@ python3 -m venv /tmp/venv >/dev/null 2>&1
 source /tmp/venv/bin/activate >/dev/null 2>&1
 pip install --upgrade pip >/dev/null 2>&1
 
-for DIR in `find . -maxdepth 1 -type d`
+for DIR in `find /root/rpmbuild/SOURCES -maxdepth 1 -type d`
 do
     cd $DIR >/dev/null 2>&1
     MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
@@ -37,8 +37,8 @@ do
         spec2scl $DIR.spec > $DIR.scl.pre.spec
         awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\"" ; next }1' $DIR.scl.pre.spec > $DIR.scl.pre.spec.1
         cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }} INSTALLED_FILES#' > $DIR.scl.pre.spec.2
-        cat $DIR.scl.pre.spec.2 | sed "s/Source0:/Source0: ${DIR}/${MYPKG}.tar.gz\n#/" > $DIR.scl.pre.spec.3
-        cat $DIR.scl.pre.spec.3 | sed "s/setup -n /setup -n ${DIR}/${MYPKG}.tar.gz\n#/" > $DIR.scl.spec
+        cat $DIR.scl.pre.spec.2 | sed "s£Source0:£Source0: ${DIR}/${MYPKG}.tar.gz\n#£" > $DIR.scl.pre.spec.3
+        cat $DIR.scl.pre.spec.3 | sed "s£setup -n £setup -n ${DIR}/${MYPKG}.tar.gz\n#£" > $DIR.scl.spec
       fi
     fi
     cd -
