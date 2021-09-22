@@ -16,3 +16,23 @@
     state: permissive
 
 
+- name: build_virtual_environments | Install tools on build servers
+  ansible.builtin.package:
+    name:  '{{ item  }}'
+    state: present
+  with_items:
+    - "git"
+    - "python3-pip"
+    - "platform-python-devel"
+    - "make" 
+    - "autoconf" 
+    - "automake" 
+    - "libtool" 
+    - "gcc"
+    - "zlib-devel"
+    - "rpm-build"
+    - "tree"
+    - "python3-virtualenv"
+    - "help2man"
+    - "scl-utils-build"
+      #    - "liberasurecode-devel"
