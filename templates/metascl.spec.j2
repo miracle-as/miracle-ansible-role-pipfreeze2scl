@@ -105,7 +105,7 @@ export XDG_DATA_DIRS="%{_datadir}:\${XDG_DATA_DIRS:-/usr/local/share:/usr/share}
 EOF
 
 # Add the aditional macros to macros.%%{scl}-config
-cat %{SOURCE0} >> %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl}-config
+#cat %{SOURCE0} >> %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl}-config
 # instead of replacing @scl@ with %%{scl} macro we replace it with scl_name_base and scl_name_version
 # because scl macro contains vendor prefix rh- and this leads to wrong macro names
 # (macro can't contain -) and erros like %rh has illegal name
