@@ -36,11 +36,8 @@
     - "help2man"
     - "scl-utils-build"
       #    - "liberasurecode-devel"
-      
+
 - name: Enable codeready-builder repository
   community.general.rhsm_repository:
     name: codeready-builder-for-rhel-8-x86_64-rpms
-  when: ansible_os_family == 'RedHat'
-  tags:
-    - lmod
   
