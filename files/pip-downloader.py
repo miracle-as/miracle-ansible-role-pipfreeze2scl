@@ -25,7 +25,7 @@ from pip._vendor.packaging.specifiers import SpecifierSet
 
 PREFIX = 'ostack'
 PACKAGER = 'automate <info@miracle.dk>'
-PACKAGES_DIR="/root"
+PACKAGES_DIR="/root/rpmbuild/SOURCES"
 
 def generate_spec_for(package_name, reqs_data, build_reqs_data, pkgs_dir):
     pkg_dir = glob.glob(f'{pkgs_dir}/{package_name}/*/')[0]
