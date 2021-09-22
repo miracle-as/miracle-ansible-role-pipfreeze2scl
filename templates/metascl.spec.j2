@@ -1,7 +1,15 @@
 %global scl_name_prefix {{ organisation }}-
-%global scl_name_base {{ sclname }}
-%global scl %{scl_name_prefix}%{scl_name_base}
+%global scl_name_base {{ project }}
+%global scl %{scl_name_prefix}%{scl_name_base}%{scl_name_version}
 %global _scl_prefix /opt/{{ organisation }}
+
+## General notes about python36 SCL packaging
+# - the names of packages are NOT prefixed with 'python3-' (e.g. are the same as in Fedora)
+# - the names of binaries of Python 3 itself are both python{-debug,...} and python3{-debug,...}
+#   so both are usable in shebangs, the non-versioned binaries are preferred.
+# - the names of other binaries are NOT prefixed with 'python3-'.
+# - there are both macros in '3' variant and non-versioned variant, e.g. both %%{__python}
+#   and %%{__python3} are available
 
 %global nfsmountable 1
 
@@ -127,4 +135,10 @@ install -m 644 %{scl_name}.7 %{buildroot}%{_mandir}/man7/%{scl_name}.7
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
-
+* Wed May 31 2017 Tomas Orsava <torsava@redhat.com> - 2.0-1
+- Created the rh-python36 metapackage by importing rh-python35, applying the
+  following patch and modifying the version to 36
+- Moved pythondeps-scl-35.sh and 2 macro definitions from the -build subpackage
+  to the rh-python35-python-devel subpackage where it should be for dependant
+  collections to build properly
+Resolves: rhbz#1422346
