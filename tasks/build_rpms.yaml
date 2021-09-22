@@ -1,9 +1,19 @@
 
-- name: Ensure our bould env is created
-  ansible.builtin.shell: rpmdev-setuptree
-  args:
-    chdir: /root
-  become: True
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: /root/rpmbuild/{{ mydir }}
+    state: directory
+    recurse: yes
+    mode: '0755'
+  loop:
+    - BUILD
+    - BUILDROOT
+    - RPMS
+    - SOURCES
+    - SPECS
+    - SRPMS
+  loop_control:
+    loop_var: mydir
 
 - name: " build_virtual_environments |  Running downloader script to collect python sources"
   ansible.builtin.shell: /var/lib/openstack/venv/builder/venv/bin/python /usr/local/bin/pip-downloader.py
