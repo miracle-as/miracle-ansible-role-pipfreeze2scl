@@ -10,4 +10,6 @@
   ansible.builtin.template:
     src: create.sclspec.sh.j2
     dest: /usr/local/bin/create.sclspec.sh
+    mode: 755
     force: yes
+  become: True

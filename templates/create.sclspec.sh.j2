@@ -1,20 +1,40 @@
 #!/usr/bin/env bash
+python3 -m venv /tmp/venv
+source /tmp/venv/bin/activate
+pip install --upgrade pip
 
 for DIR in `find . -maxdepth 1 -type d`
 do
     cd $DIR
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip
+    #if we have a setup.py 
+
     if [[ -f setup.py ]];
     then
-        python3 setup.py bdist_rpm --spec-only
+      #loop until build dependecies are cleare
+      LOOP="YES"
+      while [[ $LOOP == "YES" ]];
+      do
+        python3 setup.py bdist_rpm --spec-only >/tmp/std.log 2>&1
         if [[ $? == 0 ]];
         then
-            cat dist/*.spec > $DIR.spec
-            spec2scl $DIR.spec > $DIR.scl.pre.spec
-            awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/#'\"" ; next }1' $DIR.scl.pre.spec \
-            | sed 's#root=$RPM_BUILD_ROOT#$RPM_BUILD_ROOT/opt/miracle/flask#' > $DIR.scl.spec
+          LOOP="NO"
+        else
+          cat  /tmp/std.log
+          exit 
         fi
-    fi
-    
+      done
+
+      #create a magic spec file for scl 
+      if [[ $? == 0 ]];
+      then
+        cat dist/*.spec > $DIR.spec
+        spec2scl $DIR.spec > $DIR.scl.pre.spec
+        awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/#'\"" ; next }1' $DIR.scl.pre.spec \
+          | sed 's#root=$RPM_BUILD_ROOT#$RPM_BUILD_ROOT/opt/miracle/flask#' > $DIR.scl.spec
+      fi
     cd -
 done
 
