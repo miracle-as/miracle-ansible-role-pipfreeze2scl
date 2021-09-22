@@ -59,30 +59,30 @@
     virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
     state: latest
 
-- name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ project }} - {{ ostack_version }})"
+- name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ project }} - {{ version }})"
   pip:
     name: ['setuptools', 'setuptools-rust', 'wheel']
-    virtualenv: '/var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/venv'
+    virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
     state: latest
 
-- name: " build_virtual_environments | Build a virtual environment for ({{ ostack_component }} - {{ ostack_version }})"
+- name: " build_virtual_environments | Build a virtual environment for ({{ project }} - {{ version }})"
   pip:
-    requirements: '/tmp/builder/checkout/{{ ostack_component }}/{{ ostack_version }}/requirements.txt'
-    virtualenv: '/var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/venv'
+    requirements: '/tmp/builder/checkout/{{ project }}/{{ version }}/requirements.txt'
+    virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
 
 - name:  build_virtual_environments | Template a file to rpmvenv.json
   ansible.builtin.template:
     src: templates/rpmvenv.json.j2
-    dest: '/var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/rmpvenv.json'
+    dest: '/var/lib/openstack/venv/{{ project }}/{{ version }}/rmpvenv.json'
     force: yes
 
 - name:  build_virtual_environments | create the final requierements.txt file
-  shell: /var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/venv/bin/pip freeze >   /var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/requirements.txt
+  shell: /var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze >   /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt
 
-- name: Store file into /tmp/ostack/{{ ostack_version }}/{{ ostack_component }}.requirements.txt
+- name: Store file into /tmp/ostack/{{ version }}/{{ project }}.requirements.txt
   ansible.builtin.fetch:
-    src:  /var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}/requirements.txt
-    dest: /tmp/ostack/{{ ostack_version }}/{{ ostack_component }}.requirements.txt
+    src:  /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt
+    dest: /tmp/ostack/{{ version }}/{{ project }}.requirements.txt
     
 - name: " build_virtual_environments | Build a virtual for building packages face 1"
   pip:
@@ -101,5 +101,5 @@
 - name: " build_virtual_environments |  Running downloader script to collect python sources"
   ansible.builtin.shell: /var/lib/openstack/venv/builder/venv/bin/python /usr/local/bin/pip-downloader.py
   args:
-    chdir: /var/lib/openstack/venv/{{ ostack_component }}/{{ ostack_version }}
+    chdir: /var/lib/openstack/venv/{{ project }}/{{ version }}
 
