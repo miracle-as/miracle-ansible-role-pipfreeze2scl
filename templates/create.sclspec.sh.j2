@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+for DIR in `find . -maxdepth 1 -type d`
+do
+    cd $DIR
+    if [[ -f setup.py ]];
+    then
+        python3 setup.py bdist_rpm --spec-only
+        if [[ $? == 0 ]];
+        then
+            cat dist/*.spec > $DIR.spec
+            spec2scl $DIR.spec > $DIR.scl.pre.spec
+            awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/#'\"" ; next }1' $DIR.scl.pre.spec \
+            | sed 's#root=$RPM_BUILD_ROOT#$RPM_BUILD_ROOT/opt/miracle/flask#' > $DIR.scl.spec
+        fi
+    fi
+    
+    cd -
+done
+
