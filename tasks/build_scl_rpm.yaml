@@ -1,11 +1,8 @@
 - name: create meta scl package
   include: create_meta_scl_package.yaml
 
-  #- name: download_pip_sources
-  #include: download_pip_sources.yaml
-
-  #- name: create_specfiles
-  # include: create_specfiles
+- name: create_specfiles
+  include: create_specfiles
 
   #- name: create_scl_specfiles
   # include: create_scl_specfiles.yaml

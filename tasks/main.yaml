@@ -3,4 +3,6 @@
 
 #- include: build_virtual_environments.yaml
 - include: build_rpms.yaml
+- include: build_scl_rpm.yaml
+
 

@@ -1,0 +1,11 @@
+- name: 
+  find:
+    paths: /root/rpmbuild/SOURCES
+    recurse: yes
+    file_type: directory
+    depth: 1
+    register: sources
+    
+- debug:
+    msg: "{{ item.path }}"
+  loop: "{{ sources.files }}" 

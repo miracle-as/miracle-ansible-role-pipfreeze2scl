@@ -1,0 +1,36 @@
+
+- name: build_rpms | Create a directory if it does not exist
+  ansible.builtin.file:
+    path: /root/rpmbuild/{{ mydir }}
+    state: directory
+    recurse: yes
+    mode: '0755'
+  loop:
+    - BUILD
+    - BUILDROOT
+    - RPMS
+    - SOURCES
+    - SPECS
+    - SRPMS
+  loop_control:
+    loop_var: mydir
+
+- name: build_rpms | create a pip downloader
+  ansible.builtin.copy:
+    src: pip-downloader.py
+    dest: /usr/local/bin/pip-downloader.py
+    owner: root
+    group: root½
+    mode: '0755'
+
+
+- name: "build_rpms | Create requirements file"
+  shell: "/var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze > /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt"
+
+- name: " build_rpms |  Running downloader script to collect python sources"
+  ansible.builtin.shell: /var/lib/openstack/venv/builder/venv/bin/python /usr/local/bin/pip-downloader.py
+  args:
+    chdir: /var/lib/openstack/venv/{{ project }}/{{ version }}
+  become: True
+
+
