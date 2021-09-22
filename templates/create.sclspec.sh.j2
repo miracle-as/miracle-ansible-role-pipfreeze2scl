@@ -22,8 +22,10 @@ do
         then
           LOOP="NO"
         else
-          cat  /tmp/std.log |grep "No module named"
-          exit 
+          for MODULE in `cat  /tmp/std.log |grep "No module named" |awk -F"'" '{ print $2 }'`
+          do
+            pip install $MODULE
+          done
         fi
       done
 
