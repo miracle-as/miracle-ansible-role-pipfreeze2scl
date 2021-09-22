@@ -15,6 +15,15 @@
   loop_control:
     loop_var: mydir
 
+- name: build_virtual_environments | create a pip downloader
+  ansible.builtin.copy:
+    src: pip-downloader.py
+    dest: /usr/local/bin/pip-downloader.py
+    owner: root
+    group: root
+    mode: '0755'
+    
+
 - name: "Guard code, so we are more certain we are in a virtualenv"
   shell: "/var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze > /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt"
 

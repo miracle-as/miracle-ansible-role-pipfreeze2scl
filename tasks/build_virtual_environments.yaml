@@ -7,13 +7,6 @@
     state: directory
     recurse: yes
 
-- name: build_virtual_environments | create a pip downloader
-  ansible.builtin.copy:
-    src: pip-downloader.py
-    dest: /usr/local/bin/pip-downloader.py
-    owner: root
-    group: root
-    mode: '0755'
 
 - name: build_virtual_environments | Install tools on build servers
   ansible.builtin.package:
@@ -96,3 +89,4 @@
     virtualenv: '/var/lib/openstack/venv/builder/venv'
     state: latest
 
+#
