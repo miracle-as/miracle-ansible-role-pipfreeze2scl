@@ -6,6 +6,7 @@ pip install --upgrade pip >/dev/null 2>&1
 for DIR in `find . -maxdepth 1 -type d`
 do
     cd $DIR >/dev/null 2>&1
+    MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
     python3 -m venv venv >/dev/null 2>&1
     source venv/bin/activate >/dev/null 2>&1
     pip install --upgrade pip >/dev/null 2>&1
@@ -35,7 +36,8 @@ do
         cat dist/*.spec > $DIR.spec
         spec2scl $DIR.spec > $DIR.scl.pre.spec
         awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\"" ; next }1' $DIR.scl.pre.spec \
-          | sed 's#root=$RPM_BUILD_ROOT#$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}#' > $DIR.scl.spec
+          | sed 's#root=$RPM_BUILD_ROOT#$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}#' \
+          | sed "s/Source0:/Source0: ${MYPKG}.tar.gz\n#/" $> $DIR.scl.spec
       fi
     fi
     cd -
