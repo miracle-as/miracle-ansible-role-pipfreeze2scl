@@ -13,3 +13,11 @@
     mode: 755
     force: yes
   become: True
+
+- name:  create_specfiles | create a tailored metaspecfile
+  ansible.builtin.template:
+    src: metascl.spec.j2
+    dest: /root/{{ organisation }}.{{ project }}.meta.scl.spec
+    mode: 644
+    force: yes
+  become: True
