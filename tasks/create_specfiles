@@ -6,14 +6,8 @@
     file_type: directory
   register: sources
 
-- name: create_specfiles
-  ansible.builtin.shell: python3 setup.py bdist_rpm --spec-only
-  args:
-    chdir: "{{ mydir.path }}"
-  stat: path={{ mydir.path }}/setup.py 
-  register: p
-  when: p.stat.isfile is defined
-  become: True
-  loop: "{{ sources.files }}" 
-  loop_control:
-    loop_var: mydir
+- name:  create_specfiles | create a tailored script
+  ansible.builtin.template:
+    src: create.sclspec.sh.j2
+    dest: /usr/local/bin/create.sclspec.sh
+    force: yes
