@@ -16,14 +16,7 @@
     loop_var: mydir
 
 - name: "Guard code, so we are more certain we are in a virtualenv"
-  shell: "/var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze"
-  register: command_result
-
-
-- name: Dump varianble
-  debug:
-    msg: "{{ command_result }}"
-
+  shell: "/var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze > /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt"
 
 - name: " build_rpms |  Running downloader script to collect python sources"
   ansible.builtin.shell: /var/lib/openstack/venv/builder/venv/bin/python /usr/local/bin/pip-downloader.py
