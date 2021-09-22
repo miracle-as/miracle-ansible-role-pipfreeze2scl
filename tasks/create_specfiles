@@ -6,6 +6,11 @@
     file_type: directory
   register: sources
 
-- debug:
-    msg: "{{ item.path }}"
+- name: create_specfiles
+  ansible.builtin.shell: python3 setup.py bdist_rpm --spec-only
+  args:
+    chdir: {{ mydir.path }}
+  become: True
   loop: "{{ sources.files }}" 
+  loop_control:
+    loop_var: mydir
