@@ -16,8 +16,7 @@
     loop_var: mydir
 
 - name: "Guard code, so we are more certain we are in a virtualenv"
-  ansible_python_interpreter: "/var/lib/openstack/venv/{{ project }}/{{ version }}/bin/python"
-  pip: freeze
+  shell: "/var/lib/openstack/venv/{{ project }}/{{ version }}/bin/pip freeze"
   register: command_result
 
 
