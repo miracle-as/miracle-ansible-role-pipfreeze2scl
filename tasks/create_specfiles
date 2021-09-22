@@ -2,8 +2,9 @@
   find:
     paths: /root/rpmbuild/SOURCES
     recurse: no
+    depth: 1
     file_type: directory
-    register: sources
+  register: sources
 
 - debug:
     msg: "{{ item.path }}"
