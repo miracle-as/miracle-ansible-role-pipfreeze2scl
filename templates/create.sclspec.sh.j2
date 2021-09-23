@@ -48,8 +48,6 @@ do
         fi
       done
 
-      tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz .
-      scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
 
 
       #create a magic spec file for scl 
@@ -65,7 +63,7 @@ do
         scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
       fi
       cd ..
-      tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYDIR
+      tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
       scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
     fi
     cd -
