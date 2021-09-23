@@ -20,8 +20,8 @@ do
 
     MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
     MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
-    python3 -m venv venv >/dev/null 2>&1
-    source venv/bin/activate >/dev/null 2>&1
+#    python3 -m venv venv >/dev/null 2>&1
+#    source venv/bin/activate >/dev/null 2>&1
     pip install --upgrade pip >/dev/null 2>&1
     #if we have a setup.py 
 
