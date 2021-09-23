@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 PROJECT=$2
 ORG=$1
+touch /root/rpmbuild/SOURCES/README
+touch /root/rpmbuild/SOURCES/LICENSE
+
+cd 
+
+rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec
+
 
 python3 -m venv /tmp/venv >/dev/null 2>&1
 source /tmp/venv/bin/activate >/dev/null 2>&1
