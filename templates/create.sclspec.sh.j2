@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+PROJECT=$2
+ORG=$3
 python3 -m venv /tmp/venv >/dev/null 2>&1
 source /tmp/venv/bin/activate >/dev/null 2>&1
 pip install --upgrade pip >/dev/null 2>&1
@@ -46,7 +48,7 @@ do
         cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }} INSTALLED_FILES#' > $DIR.scl.pre.spec.2
         cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: ${DIR}/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
         MYNAME=`echo $DIR | awk -F"${MYPKG}" '{ print $1 }'`
-        cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n /root/rpmbuild/SOURCES/${MYNAME}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${MYPKG}.scl.spec
+        cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n /root/rpmbuild/SOURCES/${MYNAME}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}${MYPKG}.scl.spec
         scp /root/rpmbuild/SPECS/${MYPKG}.scl.spec  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
       fi
     fi
