@@ -65,7 +65,9 @@ do
       cd ..
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
       scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
+      rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define "scl miracle-pip2scl-demo"
     fi
     cd -
 done
 
+scp -r /root/rpmbuild/RPMS/* repos.pip2scl.dk://usr/share/nginx/html/RPMS/
