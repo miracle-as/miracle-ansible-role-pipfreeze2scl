@@ -40,6 +40,10 @@ do
         fi
       done
 
+      tar -cvzf /root/rpmbuild/SOURCES/$MYPKG.tag.gz
+      scp  /root/rpmbuild/SOURCES/$MYPKG.tag.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
+      
+
       #create a magic spec file for scl 
       if [[ $? == 0 ]];
       then
