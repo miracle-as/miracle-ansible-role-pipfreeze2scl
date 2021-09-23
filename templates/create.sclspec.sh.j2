@@ -4,14 +4,13 @@ ORG=$1
 touch /root/rpmbuild/SOURCES/README
 touch /root/rpmbuild/SOURCES/LICENSE
 
-cd 
 
 rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec
 
 
 #python3 -m venv /tmp/venv >/dev/null 2>&1
 #source /tmp/venv/bin/activate >/dev/null 2>&1
-pip install --upgrade pip >/dev/null 2>&1
+pip3 install --upgrade pip >/dev/null 2>&1
 
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
@@ -22,7 +21,7 @@ do
     MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
 #    python3 -m venv venv >/dev/null 2>&1
 #    source venv/bin/activate >/dev/null 2>&1
-    pip install --upgrade pip >/dev/null 2>&1
+    pip3 install --upgrade pip >/dev/null 2>&1
     #if we have a setup.py 
 
     if [[ -f setup.py ]];
@@ -38,7 +37,7 @@ do
         else
           for MODULE in `cat  /tmp/std.log |grep "No module named" |awk -F"'" '{ print $2 }'`
           do
-            pip install $MODULE
+            pip3 install $MODULE
           done
           for PKGDIR in `cat  /tmp/std.log |grep "error: package directory" |awk -F"'" '{ print $2 }'`
           do
