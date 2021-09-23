@@ -10,6 +10,7 @@ for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
     echo $DIR
     cd $DIR >/dev/null 2>&1
+
     MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
     MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
     python3 -m venv venv >/dev/null 2>&1
@@ -56,6 +57,9 @@ do
         cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n /root/rpmbuild/SOURCES/${MYNAME}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec
         scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
       fi
+      cd ..
+      tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYDIR
+      scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
     fi
     cd -
 done
