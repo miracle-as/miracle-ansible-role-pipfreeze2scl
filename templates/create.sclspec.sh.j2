@@ -47,6 +47,7 @@ do
         cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: ${DIR}/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
         MYNAME=`echo $DIR | awk -F"${MYPKG}" '{ print $1 }'`
         cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n /root/rpmbuild/SOURCES/${MYNAME}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${MYPKG}.scl.spec
+        scp /root/rpmbuild/SPECS/${MYPKG}.scl.spec  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
       fi
     fi
     cd -
