@@ -16,9 +16,13 @@
     state: permissive
 
 - name: Enable codeready-builder repository
-  shell: sudo subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+  shell: subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
   become: True
 
+- name: remove python 36 
+  ansible.builtin.package:
+    name:  'python3'
+    state: absent
 
 - name: build_virtual_environments | Install tools on build servers
   ansible.builtin.package:
@@ -26,8 +30,9 @@
     state: present
   with_items:
     - "git"
-    - "python3-pip"
-    - "platform-python-devel"
+    - "python38"
+    - "python38-pip"
+    - "python38-devel"
     - "make" 
     - "autoconf" 
     - "automake" 
