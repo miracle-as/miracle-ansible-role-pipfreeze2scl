@@ -36,7 +36,7 @@
   ansible.builtin.git:
     repo: '{{ repo_url }}'
     dest: '/tmp/builder/checkout/{{ project }}/{{ version }}'
-    version: '{{ version }}'
+    version: '{{ branch }}'
     clone: yes
     update: yes
   become: True
@@ -57,6 +57,11 @@
     name: ['setuptools', 'setuptools-rust', 'wheel']
     virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
     state: latest
+
+#- name: Find a requirement.txt files in the structure
+#  find: 
+
+
 
 - name: " build_virtual_environments | Build a virtual environment for ({{ project }} - {{ version }})"
   pip:
