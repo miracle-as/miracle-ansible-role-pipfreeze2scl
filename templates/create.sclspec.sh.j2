@@ -14,8 +14,7 @@ else
   exit 1
 fi
 
-rpm -Uhd /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-2.0-1.el8.x86_64.rpm
-
+rpm -Uhd /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm
 
 pip3 install --upgrade pip >/dev/null 2>&1
 pip3 install spec2scl
