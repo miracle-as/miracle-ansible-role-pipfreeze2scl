@@ -104,15 +104,6 @@ do
         cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec
         scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
       fi
-      grep "ez_setyp" setyp.py
-      if [[ $? == 0 ]];
-      then
-        echo "`date`: SCL metapackage build ok"
-      else
-        echo "import ez_setup" > setup.py.new
-        cat setup.py >> setup.py.new
-        mv setup.py.new setup.py
-      fi
       cd ..
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
       scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
