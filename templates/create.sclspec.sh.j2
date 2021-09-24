@@ -1,8 +1,20 @@
 #!/usr/bin/env bash
 PROJECT=$2
 ORG=$1
+echo "`date`: Creating software Collection for {{ organisation }} - project {{ project }}."
+
+#PREPARE
+echo "`date`: Prepare run."
+mkdir ~/.ssh >/dev/null 2>&1
+chmod 700 ~/.ssh
+cp /home/vagrant/scldistro ~/.ssh/id_rsa
+chmod 600 ~/.ssh/idrsa
 touch /root/rpmbuild/SOURCES/README
 touch /root/rpmbuild/SOURCES/LICENSE
+
+
+#META package
+echo "`date`: Build the metapackage."
 
 cd 
 rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec >/dev/null 2>&1
@@ -14,6 +26,7 @@ else
   exit 1
 fi
 
+echo "`date`: install the metapackage runtime."
 rpm -i /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm
 if [[ $? == 0 ]];
 then
