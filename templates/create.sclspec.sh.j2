@@ -70,6 +70,7 @@ do
     if [[ -f setup.py ]];
     then
       #loop until build dependecies are cleare
+      #Try with python 3
       LOOP="YES"
       while [[ $LOOP == "YES" ]];
       do
@@ -92,22 +93,26 @@ do
 
 
 
-      #create a magic spec file for scl 
-      if [[ $? == 0 ]];
-      then
-        cat dist/*.spec > $DIR.spec
-        spec2scl $DIR.spec > $DIR.scl.pre.spec
-        awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
-        cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }} #' > $DIR.scl.pre.spec.2
-        cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
-        MYNAME=`echo $DIR | awk -F"${MYPKG}" '{ print $1 }'`
-        cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec
-        scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
-      fi
+      cat dist/*.spec > $DIR.spec
+      spec2scl $DIR.spec > $DIR.scl.pre.spec
+      awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
+      cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }} #' > $DIR.scl.pre.spec.2
+      cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
+      MYNAME=`echo $DIR | awk -F"${MYPKG}" '{ print $1 }'`
+      cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec
+      scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+      
       cd ..
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
       scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
-      rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define "scl {{ organisation }}-{{ project }}"
+      rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define "scl {{ organisation }}-{{ project }}" >/dev/null 2>&1
+      if [[ $? == 0 ]];
+      then
+        echo "`date`: package build with python3"
+      else  
+        cat /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  | sed "s/python3/python2/g" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec.python2
+        scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec.python2 root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+      fi
     fi
     cd -
 done
