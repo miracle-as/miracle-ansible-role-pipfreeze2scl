@@ -112,6 +112,14 @@ do
       else  
         cat /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  | sed "s/python3/python2/g" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec.python2
         scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec.python2 root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+        rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define "scl {{ organisation }}-{{ project }}" >/dev/null 2>&1
+        if [[ $? == 0 ]];
+        then
+          echo "`date`: package build with python2"
+        else  
+          echo "`date`: package build with python2 failed"
+          exit
+        fi
       fi
     fi
     cd -
