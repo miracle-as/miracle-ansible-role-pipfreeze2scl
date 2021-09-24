@@ -17,23 +17,37 @@ touch /root/rpmbuild/SOURCES/LICENSE
 echo "`date`: Build the metapackage."
 
 cd 
-rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec >/dev/null 2>&1
-if [[ $? == 0 ]];
+if [[ -f /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm ]];
 then
-  echo "`date`: SCL metapackage build ok"
+  echo "`date`: SCL metapackage already build "
 else
-  echo "`date`: SCL metapackage build failed"
-  exit 1
+
+  rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec >/dev/null 2>&1
+  if [[ $? == 0 ]];
+  then
+    echo "`date`: SCL metapackage build ok"
+  else
+    echo "`date`: SCL metapackage build failed"
+    exit 1
+  fi
 fi
 
 echo "`date`: install the metapackage runtime."
-rpm -i /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm
-if [[ $? == 0 ]];
+cd 
+rpm -qa |grep "{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm"
+if [[ $? == 0  ]];
 then
-  echo "`date`: SCL metapackage installed ok"
+  echo "`date`: metapackage runtime already installed."
 else
-  echo "`date`: SCL metapackage install failed"
-  exit 1
+
+  rpm -i  /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm
+  if [[ $? == 0 ]];
+  then
+    echo "`date`: SCL metapackage installed ok"
+  else
+    echo "`date`: SCL metapackage install failed"
+    exit 1
+  fi
 fi
 
 
