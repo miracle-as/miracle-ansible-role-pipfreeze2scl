@@ -5,7 +5,16 @@ touch /root/rpmbuild/SOURCES/README
 touch /root/rpmbuild/SOURCES/LICENSE
 
 cd 
-rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec
+rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec >/dev/null 2>&1
+if [[ $? == 0 ]];
+then
+  echo "`date`: SCL metapackage build ok"
+else
+  echo "`date`: SCL metapackage build failed"
+  exit 1
+fi
+
+rpm -Uhd /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-2.0-1.el8.x86_64.rpm
 
 
 pip3 install --upgrade pip >/dev/null 2>&1
