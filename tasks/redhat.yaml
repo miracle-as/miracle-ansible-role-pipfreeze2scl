@@ -39,4 +39,6 @@
     - "python3-virtualenv"
     - "help2man"
     - "scl-utils-build"
+    - "scl-utils"
+    
       #    - "liberasurecode-devel"
