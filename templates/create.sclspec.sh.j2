@@ -110,7 +110,7 @@ do
       else
         echo "import ez_setup" > setup.py.new
         cat setup.py >> setup.py.new
-        mv setup.py.new setup-py
+        mv setup.py.new setup.py
       fi
       cd ..
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
