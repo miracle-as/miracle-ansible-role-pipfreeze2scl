@@ -9,6 +9,7 @@ rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec
 
 
 pip3 install --upgrade pip >/dev/null 2>&1
+pip3 install spec2scl
 
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
