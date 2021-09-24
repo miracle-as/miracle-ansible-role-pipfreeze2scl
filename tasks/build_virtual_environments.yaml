@@ -58,9 +58,6 @@
     virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
     state: latest
 
-#- name: Find a requirement.txt files in the structure
-#  find: 
-
 
 
 - name: " build_virtual_environments | Build a virtual environment for ({{ project }} - {{ version }})"

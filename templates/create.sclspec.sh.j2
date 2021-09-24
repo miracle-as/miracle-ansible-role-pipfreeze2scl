@@ -8,7 +8,7 @@ echo "`date`: Prepare run."
 mkdir ~/.ssh >/dev/null 2>&1
 chmod 700 ~/.ssh
 cp /home/vagrant/scldistro ~/.ssh/id_rsa
-chmod 600 ~/.ssh/idrsa
+chmod 600 ~/.ssh/id_rsa
 touch /root/rpmbuild/SOURCES/README
 touch /root/rpmbuild/SOURCES/LICENSE
 
@@ -34,7 +34,7 @@ fi
 
 echo "`date`: install the metapackage runtime."
 cd 
-rpm -qa |grep "{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm"
+rpm -qa |grep "{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64"
 if [[ $? == 0  ]];
 then
   echo "`date`: metapackage runtime already installed."
@@ -53,6 +53,7 @@ fi
 
 pip3 install --upgrade pip >/dev/null 2>&1
 pip3 install spec2scl
+pip3 install setuptools
 
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
@@ -62,6 +63,7 @@ do
     MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
     MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
     pip3 install --upgrade pip >/dev/null 2>&1
+
     #if we have a setup.py 
 
     if [[ -f setup.py ]];
@@ -100,6 +102,15 @@ do
         MYNAME=`echo $DIR | awk -F"${MYPKG}" '{ print $1 }'`
         cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec
         scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+      fi
+      grep "ez_setyp" setyp.py
+      if [[ $? == 0 ]];
+      then
+        echo "`date`: SCL metapackage build ok"
+      else
+        echo "import ez_setup" > setup.py.new
+        cat setup.py >> setup.py.new
+        mv setup.py.new setup-py
       fi
       cd ..
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG

@@ -40,5 +40,6 @@
     - "help2man"
     - "scl-utils-build"
     - "scl-utils"
-    
+    - "libffi-devel"
+
       #    - "liberasurecode-devel"
