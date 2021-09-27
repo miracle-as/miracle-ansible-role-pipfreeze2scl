@@ -116,8 +116,12 @@ do
       echo "exit 1" >> $SCRIPT
       fi >> $SCRIPT
       scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS
+      if [[ $? == 0 ]];
+      then
+        echo "`date`: SCL build scipt populated"
+      else
+        echo "`date`: SCL build scipt failed"
+      fi 
     fi
     cd -
 done
-
-scp -r /root/rpmbuild/RPMS/* repos.pip2scl.dk://usr/share/nginx/html/RPMS/
