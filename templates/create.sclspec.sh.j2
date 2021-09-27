@@ -16,7 +16,7 @@ touch /root/rpmbuild/SOURCES/LICENSE
 #META package
 echo "`date`: {{ organisation }} {{ project }}Build the metapackage."
 
-cd 
+cd  >/dev/null 2>&1
 if [[ -f /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm ]];
 then
   echo "`date`: {{ organisation }} {{ project }}SCL metapackage already build "
@@ -34,7 +34,7 @@ fi
 
 echo "`date`: {{ organisation }} {{ project }} install the metapackage runtime."
 cd 
-rpm -qa |grep "{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64"
+rpm -qa |grep "{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64" >/dev/null 2>&1
 if [[ $? == 0  ]];
 then
   echo "`date`: {{ organisation }} {{ project }} metapackage runtime already installed."
