@@ -117,7 +117,7 @@ do
         echo "then" >> $SCRIPT
         echo "  echo \"`date`: {{ organisation }} {{ project }} package build with python3\"" >> $SCRIPT
 
-        awk '/Group: / { print; print "" ; next }1' /root/{{ organisation }}.{{ project }}.project.spec  > /root/{{ organisation }}.{{ project }}.project.spec.add
+        awk '/Group: / { print; print "${MYPKG" ; next }1' /root/{{ organisation }}.{{ project }}.project.spec  > /root/{{ organisation }}.{{ project }}.project.spec.add
         mv /root/{{ organisation }}.{{ project }}.project.spec.add /root/{{ organisation }}.{{ project }}.project.spec
         echo "else"   >> $SCRIPT
         echo "  echo \"`date`: {{ organisation }} {{ project }} package build failledi with python3\"" >> $SCRIPT
