@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+PROJECT=$2
+ORG=$1
+echo "`date`: {{ organisation }} {{ project }}Creating software Collection for {{ organisation }} - project {{ project }}."
+
+#PREPARE
+echo "`date`: {{ organisation }} {{ project }}Prepare run."
+mkdir ~/.ssh >/dev/null 2>&1
+chmod 700 ~/.ssh
+cp /home/vagrant/scldistro ~/.ssh/id_rsa
+chmod 600 ~/.ssh/id_rsa
+touch /root/rpmbuild/SOURCES/README
+touch /root/rpmbuild/SOURCES/LICENSE
+
+
+#META package
+echo "`date`: {{ organisation }} {{ project }} Build the metapackage."
+
+cd  >/dev/null 2>&1
+if [[ -f /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm ]];
+then
+  echo "`date`: {{ organisation }} {{ project }}SCL metapackage already build "
+else
+
+  rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec >/dev/null 2>&1
+  if [[ $? == 0 ]];
+  then
+    echo "`date`: {{ organisation }} {{ project }}SCL metapackage build ok"
+  else
+    echo "`date`: {{ organisation }} {{ project }}SCL metapackage build failed"
+    exit 1
+  fi
+fi
+
+echo "`date`: {{ organisation }} {{ project }} install the metapackage runtime."
+cd 
+rpm -qa |grep "{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64" >/dev/null 2>&1
+if [[ $? == 0  ]];
+then
+  echo "`date`: {{ organisation }} {{ project }} metapackage runtime already installed."
+else
+
+  rpm -i  /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm
+  if [[ $? == 0 ]];
+  then
+    echo "`date`: {{ organisation }} {{ project }} SCL metapackage installed ok"
+  else
+    echo "`date`: {{ organisation }} {{ project }} SCL metapackage install failed"
+    exit 1
+  fi
+fi
+
+
+pip3 install --upgrade pip >/dev/null 2>&1
+pip3 install spec2scl >/dev/null 2>&1
+pip3 install ez_setup >/dev/null 2>&1
+pip3 install setuptools >/dev/null 2>&1
+pip3 install 2to3 >/dev/null 2>&1
+
+echo > /tmp/excluded.lst
+for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
+do
+    cd $DIR >/dev/null 2>&1
+    MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
+    MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
+    pip3 install --upgrade pip >/dev/null 2>&1
+
+    #if we have a setup.py 
+
+    if [[ -f setup.py ]];
+    then
+      echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG"
+      #loop until build dependecies are cleare
+      #Try with python 3
+      COUNT="0"
+      LOOP="YES"
+      while [ $LOOP == "YES" ] && [ $COUNT -lt 5 ] ;
+      do
+        NEWCOUNT=`echo $COUNT |awk '{ print $1 + 1 }'`
+        COUNT=`echo $NEWCOUNT`
+        python3 setup.py bdist_rpm --spec-only >/tmp/std.log 2>&1
+        if [[ $? == 0 ]];
+        then
+          LOOP="NO"
+        else
+          # Exception  #1 : Modules need to build
+          for MODULE in `cat  /tmp/std.log |grep "No module named" |awk -F"'" '{ print $2 }'`
+          do
+            pip3 install $MODULE
+          done
+
+          # Exception  #1 : Package dir missing
+          for PKGDIR in `cat  /tmp/std.log |grep "error: package directory" |awk -F"'" '{ print $2 }'`
+          do
+            mkdir $PKGDIR
+            touch ${PKGDIR}/__init__.py
+          done
+
+        fi
+      done
+
+      if [[ $LOOP == NO ]];
+      then
+        cat dist/*.spec > $DIR.spec
+        spec2scl $DIR.spec > $DIR.scl.pre.spec
+        awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
+        cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }} #' > $DIR.scl.pre.spec.2
+        cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
+        MYNAME=`echo $DIR | awk -F"${MYPKG}" '{ print $1 }'`
+        MYVER=`echo MYPKG | awk -F"-" '{ print $1 }'`
+        cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec
+        scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
+      
+        cd .. >/dev/null 2>&1
+        tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
+        scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES >/dev/null 2>&2
+        SCRIPT="build_{{ organisation }}_{{ project }}.scl.sh"
+        echo "#!/usr/bin/env bash" >  /tmp/${SCRIPT}
+        echo "rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define \"scl {{ organisation }}-{{ project }}\" >/dev/null 2>&1" >> $SCRIPT
+        echo "if [[ $? == 0 ]];" >> $SCRIPT
+        echo "then" >> $SCRIPT
+        echo "  echo \"`date`: {{ organisation }} {{ project }} package build with python3\"" >> $SCRIPT
+        awk '/Group: / { print; print "{{ organisation }}-{{ project }}-REPLACEMYNAME==REPLACEMYVER" ; next }1' /root/{{ organisation }}.{{ project }}.project.spec | sed "s/REPLACEMYNAME/${MYNAME}/" | sed "s/REPLACEMYVER/${MYVER}/"  > /root/{{ organisation }}.{{ project }}.project.spec.add
+        mv /root/{{ organisation }}.{{ project }}.project.spec.add /root/{{ organisation }}.{{ project }}.project.spec
+        echo "else"   >> $SCRIPT
+        echo "  echo \"`date`: {{ organisation }} {{ project }} package build failledi with python3\"" >> $SCRIPT
+        echo "exit 1" >> $SCRIPT
+        echo "fi" >> $SCRIPT
+        scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS >/dev/null 2>&1
+        if [[ $? == 0 ]];
+        then
+          echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG populated"
+        else
+          echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG failed to be populated"
+        fi 
+      else
+        echo "`date`: {{ organisation }} {{ project }} $MYPKG failed to be build and is excluded from the scl - "
+        echo $MYPKG >> /tmp/excluded.lst
+      fi
+    fi
+    cd - >/dev/null 2>&1 
+done
+scp /root/{{ organisation }}.{{ project }}.project.spec.add  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+scp  /tmp/excluded.lst root@repos.pip2scl.dk:/usr/share/nginx/html/PROJECTS/{{ organisation }}.{{ project }}.excluded.txt
+cat  /tmp/excluded.lst
