@@ -22,6 +22,14 @@
     force: yes
   become: True
 
+- name:  create_specfiles | create a tailored metaspecfile for {{ project }}
+  ansible.builtin.template:
+    src: metascl.spec.j2
+    dest: /root/{{ organisation }}.{{ project }}.project.spec
+    mode: 644
+    force: yes
+  become: True
+  
 - name: create_specfiles | Touch /root/rpmbuild/SOURCES/LICENSE
   shell: touch /root/rpmbuild/SOURCES/LICENSE
   become: True
