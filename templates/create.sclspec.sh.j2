@@ -52,15 +52,13 @@ fi
 
 
 pip3 install --upgrade pip >/dev/null 2>&1
-pip3 install spec2scl
-pip3 install ez_setup
-pip3 install setuptools
+pip3 install spec2scl >/dev/null 2>&1
+pip3 install ez_setup >/dev/null 2>&1
+pip3 install setuptools >/dev/null 2>&1
 
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
-    echo $DIR
     cd $DIR >/dev/null 2>&1
-
     MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
     MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
     pip3 install --upgrade pip >/dev/null 2>&1
@@ -100,11 +98,11 @@ do
       cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
       MYNAME=`echo $DIR | awk -F"${MYPKG}" '{ print $1 }'`
       cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec
-      scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+      scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
       
       cd ..
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
-      scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
+      scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES >/dev/null 2>&2
       SCRIPT="build_{{ organisation }}_{{ project }}.scl.sh"
       echo "#!/usr/bin/env bash" >  /tmp/${SCRIPT}
       echo "rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define \"scl {{ organisation }}-{{ project }}\" >/dev/null 2>&1" >> $SCRIPT
@@ -114,8 +112,8 @@ do
       echo "else"   >> $SCRIPT
       echo "  echo \"`date`: package build failledi with python3\"" >> $SCRIPT
       echo "exit 1" >> $SCRIPT
-      fi >> $SCRIPT
-      scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS
+      echo "fi" >> $SCRIPT
+      scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS >/dev/null 2>&1
       if [[ $? == 0 ]];
       then
         echo "`date`: SCL build scipt populated"
