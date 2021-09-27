@@ -117,9 +117,9 @@ do
       scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS >/dev/null 2>&1
       if [[ $? == 0 ]];
       then
-        echo "`date`: {{ organisation }} {{ project }} SCL build script populated"
+        echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG populated"
       else
-        echo "`date`: {{ organisation }} {{ project }} SCL build script failed to be populated"
+        echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG failed to be populated"
       fi 
     fi
     cd - >/dev/null 2>&1 
