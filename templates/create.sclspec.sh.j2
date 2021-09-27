@@ -56,6 +56,7 @@ pip3 install spec2scl >/dev/null 2>&1
 pip3 install ez_setup >/dev/null 2>&1
 pip3 install setuptools >/dev/null 2>&1
 
+echo > /tmp/excluded.lst
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
     cd $DIR >/dev/null 2>&1
@@ -133,8 +134,11 @@ do
         fi 
       else
         echo "`date`: {{ organisation }} {{ project }} $MYPKG failed to be build and is excluded from the scl - "
+        echo $MYPKG >> /tmp/excluded.lst
       fi
     fi
     cd - >/dev/null 2>&1 
 done
 scp /root/{{ organisation }}.{{ project }}.project.spec  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+scp  /tmp/excluded.lst root@repos.pip2scl.dk:/usr/share/nginx/html/PROJECTS/{{ organisation }}.{{ project }}.excluded.txt
+cat  /tmp/excluded.lst
