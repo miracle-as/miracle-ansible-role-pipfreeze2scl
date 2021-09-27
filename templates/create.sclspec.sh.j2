@@ -59,7 +59,6 @@ pip3 install setuptools >/dev/null 2>&1
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
     cd $DIR >/dev/null 2>&1
-    echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG"
     MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
     MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
     pip3 install --upgrade pip >/dev/null 2>&1
@@ -131,9 +130,9 @@ do
         else
           echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG failed to be populated"
         fi 
+      else
+        echo "`date`: {{ organisation }} {{ project }} $MYPKG failed to be build and is excluded from the scl - "
       fi
-    else
-      echo "`date`: {{ organisation }} {{ project }} $MYPKG failed to be build and is excluded from the scl - "
     fi
     cd - >/dev/null 2>&1 
 done
