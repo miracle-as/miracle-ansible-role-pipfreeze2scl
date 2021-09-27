@@ -74,6 +74,10 @@
 - name:  build_virtual_environments | create the final requierements.txt file
   shell: /var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze >   /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt
 
+- name:  build_virtual_environments |  distribute the requirements.txt file to repo server
+  shell: scp /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt root@repos.pip2scl.dk:/usr/share/nginx/html/REQUIREMENTS/{{ organisation }}.{{ project }}.{{ scl_version }}.{{ scl_release }}.requirements.txt
+
+
 - name: Store file into /tmp/ostack/{{ version }}/{{ project }}.requirements.txt
   ansible.builtin.fetch:
     src:  /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt
