@@ -89,7 +89,7 @@ do
             mkdir $PKGDIR
             touch ${PKGDIR}/__init__.py
           done
-          
+
         fi
       done
       cat dist/*.spec > $DIR.spec
@@ -117,7 +117,7 @@ do
       scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS >/dev/null 2>&1
       if [[ $? == 0 ]];
       then
-        echo " SCL build script populated"
+        echo "`date`: {{ organisation }} {{ project }} SCL build script populated"
       else
         echo "`date`: {{ organisation }} {{ project }} SCL build script failed to be populated"
       fi 
