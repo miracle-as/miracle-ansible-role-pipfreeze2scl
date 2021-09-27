@@ -105,21 +105,17 @@ do
       cd ..
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
       scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
-      rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define "scl {{ organisation }}-{{ project }}" >/dev/null 2>&1
-      if [[ $? == 0 ]];
-      then
-        echo "`date`: package build with python3"
-      else  
-        cat /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  | sed "s/python3/python2/g" > /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec.python2
-        scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec.python2 root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
-        rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define "scl {{ organisation }}-{{ project }}" >/dev/null 2>&1
-        if [[ $? == 0 ]];
-        then
-          echo "`date`: package build with python2"
-        else  
-          echo "`date`: package build with python2 failed"
-        fi
-      fi
+      SCRIPT="build_{{ organisation }}_{{ project }}.scl.sh"
+      echo "#!/usr/bin/env bash" >  /tmp/${SCRIPT}
+      echo "rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define "scl {{ organisation }}-{{ project }}" >/dev/null 2>&1 >> $SCRIPT
+      echo "if [[ $? == 0 ]];" >> $SCRIPT
+      echo "then" >> $SCRIPT
+      echo "  echo \"`date`: package build with python3\"" >> $SCRIPT"
+      echo "else"   >> $SCRIPT
+      echo "  echo \"`date`: package build failledi with python3\"" >> $SCRIPT
+      echo "exit 1" >> $SCRIPT
+      fi >> $SCRIPT
+      scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS
     fi
     cd -
 done

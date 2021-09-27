@@ -19,20 +19,14 @@
   shell: subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
   become: True
 
-- name: remove python 36 
-  ansible.builtin.package:
-    name:  'python3'
-    state: absent
-
 - name: build_virtual_environments | Install tools on build servers
   ansible.builtin.package:
     name:  '{{ item  }}'
     state: present
   with_items:
     - "git"
-    - "python38"
-    - "python38-pip"
-    - "python38-devel"
+    - "python3-pip"
+    - "python3-devel"
     - "make" 
     - "autoconf" 
     - "automake" 
