@@ -107,10 +107,10 @@ do
       scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
       SCRIPT="build_{{ organisation }}_{{ project }}.scl.sh"
       echo "#!/usr/bin/env bash" >  /tmp/${SCRIPT}
-      echo "rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define "scl {{ organisation }}-{{ project }}" >/dev/null 2>&1 >> $SCRIPT
+      echo "rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define \"scl {{ organisation }}-{{ project }}\" >/dev/null 2>&1" >> $SCRIPT
       echo "if [[ $? == 0 ]];" >> $SCRIPT
       echo "then" >> $SCRIPT
-      echo "  echo \"`date`: package build with python3\"" >> $SCRIPT"
+      echo "  echo \"`date`: package build with python3\"" >> $SCRIPT
       echo "else"   >> $SCRIPT
       echo "  echo \"`date`: package build failledi with python3\"" >> $SCRIPT
       echo "exit 1" >> $SCRIPT
@@ -120,7 +120,7 @@ do
       then
         echo "`date`: SCL build scipt populated"
       else
-        echo "`date`: SCL build scipt failed"
+        echo "`date`: SCL build scipt failed to be populated"
       fi 
     fi
     cd -
