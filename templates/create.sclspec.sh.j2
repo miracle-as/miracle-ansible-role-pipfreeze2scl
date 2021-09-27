@@ -110,6 +110,9 @@ do
       echo "if [[ $? == 0 ]];" >> $SCRIPT
       echo "then" >> $SCRIPT
       echo "  echo \"`date`: {{ organisation }} {{ project }} package build with python3\"" >> $SCRIPT
+
+      awk '/Group: / { print; print "" ; next }1' /root/{{ organisation }}.{{ project }}.project.spec  > /root/{{ organisation }}.{{ project }}.project.spec.add
+      mv /root/{{ organisation }}.{{ project }}.project.spec.add /root/{{ organisation }}.{{ project }}.project.spec
       echo "else"   >> $SCRIPT
       echo "  echo \"`date`: {{ organisation }} {{ project }} package build failledi with python3\"" >> $SCRIPT
       echo "exit 1" >> $SCRIPT
@@ -124,3 +127,4 @@ do
     fi
     cd - >/dev/null 2>&1 
 done
+scp /root/{{ organisation }}.{{ project }}.project.spec  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
