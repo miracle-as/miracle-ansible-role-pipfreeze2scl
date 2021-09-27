@@ -121,6 +121,8 @@ do
         echo "then" >> $SCRIPT
         echo "  echo \"`date`: {{ organisation }} {{ project }} package build with python3\"" >> $SCRIPT
         awk '/Group: / { print; print "{{ organisation }}-{{ project }}-REPLACEMYNAME==REPLACEMYVER" ; next }1' /root/{{ organisation }}.{{ project }}.project.spec  > /root/{{ organisation }}.{{ project }}.project.spec.add
+        sed -i "s/REPLACEMYNAME/${MYNAME}/" /root/{{ organisation }}.{{ project }}.project.spec.add
+        sed -i "s/REPLACEMYVER/${MYVER}/" /root/{{ organisation }}.{{ project }}.project.spec.add
         mv /root/{{ organisation }}.{{ project }}.project.spec.add /root/{{ organisation }}.{{ project }}.project.spec
         echo "else"   >> $SCRIPT
         echo "  echo \"`date`: {{ organisation }} {{ project }} package build failledi with python3\"" >> $SCRIPT
@@ -141,9 +143,6 @@ do
     cd - >/dev/null 2>&1 
 done
 
-sed -i "s/REPLACEMYNAME/${MYNAME}/" /root/{{ organisation }}.{{ project }}.project.spec.add
-sed -i "s/REPLACEMYVER/${MYVER}/" /root/{{ organisation }}.{{ project }}.project.spec.add
-
-scp /root/{{ organisation }}.{{ project }}.project.spec.add  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+scp /root/{{ organisation }}.{{ project }}.project.spec  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
 scp  /tmp/excluded.lst root@repos.pip2scl.dk:/usr/share/nginx/html/PROJECTS/{{ organisation }}.{{ project }}.excluded.txt
 cat  /tmp/excluded.lst
