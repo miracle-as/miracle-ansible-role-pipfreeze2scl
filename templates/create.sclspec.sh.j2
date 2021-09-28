@@ -78,6 +78,8 @@ do
       do
         NEWCOUNT=`echo $COUNT |awk '{ print $1 + 1 }'`
         COUNT=`echo $NEWCOUNT`
+        echo "`date`: {{ organisation }} {{ project }} looping to detect dependecies on $MYPKG "
+
         python3 setup.py bdist_rpm --spec-only >/tmp/std.log 2>&1
         if [[ $? == 0 ]];
         then
@@ -99,8 +101,10 @@ do
         fi
       done
 
+      echo "`date`: {{ organisation }} {{ project }} looping ended on $MYPKG ($COUNT/$LOOP)"
       if [[ $LOOP == NO ]];
       then
+        echo "`date`: {{ organisation }} {{ project }} Creating SPEC files for $MYPKG"
         cat dist/*.spec > $DIR.spec
         spec2scl $DIR.spec > $DIR.scl.pre.spec
         awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
