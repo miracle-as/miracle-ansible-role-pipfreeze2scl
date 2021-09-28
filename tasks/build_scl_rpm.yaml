@@ -1,12 +1,13 @@
-- name: create meta scl package
+- name: build_scl_rpm | create meta scl package
   include: create_meta_scl_package.yaml
 
-- name: create_specfiles
+- name: build_scl_rpm | create_specfiles
   include: create_specfiles
 
-  #- name: create_scl_specfiles
-  # include: create_scl_specfiles.yaml
+- name: build_scl_rpm | create_main_rpm
+  include: create_main_rpm
 
-  #- name: build_rpms
+
+  # name: build_rpms
   #  include: build_rpms.yaml
 

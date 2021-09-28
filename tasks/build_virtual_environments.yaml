@@ -95,9 +95,5 @@
     virtualenv: '/var/lib/openstack/venv/builder/venv'
     state: latest
 
-#This script was created to speedup things but the script should be running in ansible
-- name:  build_virtual_environments |  Run the scl builder script
-  shell: /usr/local/bin/create.sclspec.sh  {{ organisation }} {{ project }} 
-  become: True
 
 #
