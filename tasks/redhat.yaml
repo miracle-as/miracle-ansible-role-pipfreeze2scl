@@ -44,3 +44,20 @@
 
 
       #    - "liberasurecode-devel"
+- name: Copy key file to root
+  shell: cp /home/vagrant/scldistro /root/.ssh/id_rsa
+
+- name: create dir
+  ansible.builtin.file:
+    path: /root/.ssh
+    owner: root
+    group: root
+    state: directory
+    mode: '0700'
+
+- name: Set permissions
+  ansible.builtin.file:
+    path: /root/.ssh/id_rsa
+    owner: root
+    group: root
+    mode: '0600'
