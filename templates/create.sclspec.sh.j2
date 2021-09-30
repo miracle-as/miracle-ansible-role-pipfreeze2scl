@@ -126,16 +126,37 @@ do
         tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
         scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES >/dev/null 2>&2
         SCRIPT="build_{{ organisation }}_{{ project }}.$MYPKG.scl.sh"
-        echo "#!/usr/bin/env bash" >  /tmp/${SCRIPT}
-        echo "rpmbuild -ba /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec  --define \"scl {{ organisation }}-{{ project }}\" >/dev/null 2>&1" >> $SCRIPT
-        echo "if [[ \$? == 0 ]];" >> $SCRIPT
+        echo "#!/usr/bin/env bash" > $SCRIPT
+        echo "" >> $SCRIPT
+        echo "mkdir /root/rpmbuild/SPECS >/dev/null 2>&1" >> $SCRIPT
+        echo "wget -O /root/rpmbuild/SPECS/{{ organisation}}.{{ project }}.${MYPKG}.scl.spec http://repos.pip2scl.dk/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec >/dev/null 2>&1" >> $SCRIPT
+        echo "if [[ $? == 0 ]];" >> $SCRIPT
         echo "then" >> $SCRIPT
-        echo "  echo \"`date`: {{ organisation }} {{ project }} package build with python3\"" >> $SCRIPT
-        echo  "{{ organisation }}-{{ project }}- ${MYNAME}==${MYVERi} " >> /root/{{ organisation }}.{{ project }}.project.spec.add
-        echo "else"   >> $SCRIPT
-        echo "  echo \"`date`: {{ organisation }} {{ project }} package build failledi with python3\"" >> $SCRIPT
+        echo "  echo \"\`date\`: Spec file copied\" >> $SCRIPT
+        echo "else" >> $SCRIPT
+        echo "  echo \"\`date\`: Spec file copy failed\"  >> $SCRIPT
         echo "  exit 1" >> $SCRIPT
         echo "fi" >> $SCRIPT
+        echo "" >> $SCRIPT
+        echo "wget -O /root/rpmbuild/SOURCES/${MYPKG}.tar.gz http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz >/dev/null 2>&1" >> $SCRIPT
+        echo "if [[ $? == 0 ]];" >> $SCRIPT
+        echo "then" >> $SCRIPT
+        echo "  echo \"\`date`: SOURCE file copied\"" >> $SCRIPT
+        echo "else" >> $SCRIPT
+        echo "  echo \"\`date`: SOURCE file copy failed\"" >> $SCRIPT
+        echo "  exit 1" >> $SCRIPT
+        echo "fi" >> $SCRIPT
+        echo "" >> $SCRIPT
+        echo "rpmbuild -ba /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec  --define \"scl met-keystone\" >/dev/null 2>&1" >> $SCRIPT
+        echo "if [[ $? == 0 ]];" >> $SCRIPT
+        echo "then" >> $SCRIPT
+        echo "  echo \"\`date\`: met keystone package build with python3\"" >> $SCRIPT
+        echo "else" >> $SCRIPT
+        echo "  echo \"\`date\`: met keystone package build failledi with python3\"" >> $SCRIPT
+        echo "  exit 1" >> $SCRIPT
+        echo "fi" >> $SCRIPT
+        echo ""  >> $SCRIPT
+
         scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS/ >/dev/null 2>&1
         if [[ $? == 0 ]];
         then
