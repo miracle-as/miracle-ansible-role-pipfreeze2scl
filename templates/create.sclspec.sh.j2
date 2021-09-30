@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 PROJECT=$2
 ORG=$1
-echo "`date`: {{ organisation }} {{ project }}Creating software Collection for {{ organisation }} - project {{ project }}."
+echo "`date`: {{ organisation }} {{ project }} Creating software Collection for {{ organisation }} - project {{ project }}."
 
 #PREPARE
-echo "`date`: {{ organisation }} {{ project }}Prepare run."
+echo "`date`: {{ organisation }} {{ project }} Prepare run."
 mkdir ~/.ssh >/dev/null 2>&1
 chmod 700 ~/.ssh
 cp /home/vagrant/scldistro ~/.ssh/id_rsa
