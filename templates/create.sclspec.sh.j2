@@ -111,6 +111,12 @@ do
       then
         echo "`date`: {{ organisation }} {{ project }} Creating SPEC files for $MYPKG"
         rm /root/{{ organisation }}.{{ project }}.project.spec.add >/dev/null 2>&1
+        PROJECTSH="/root/{{ organisation }}.{{ project }}.project.sh"
+        rm $PROJECTSH >/dev/null 2>&1
+
+        echo "#!/usr/bin/env bash" > $PROJECTSH
+        echo "" >> $PROJECTSH
+
         cat dist/*.spec > $DIR.spec
         spec2scl $DIR.spec > $DIR.scl.pre.spec
         awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
@@ -165,6 +171,7 @@ do
           if [[ $? == 0 ]];
           then
             echo "`date`: {{ organisation }} {{ project }} SCL build SPEC file for $MYPKG populated"
+            echo "curl  http://repos.pip2scl.dk/SCRIPTS/${MYPKG}.scl.sh  |bash >> $PROJECTSH
           else  
             echo "`date`: {{ organisation }} {{ project }} SCL build SPEC file for $MYPKG failed"
           fi
