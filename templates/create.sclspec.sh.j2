@@ -12,6 +12,9 @@ chmod 600 ~/.ssh/id_rsa
 touch /root/rpmbuild/SOURCES/README
 touch /root/rpmbuild/SOURCES/LICENSE
 
+# Prep the reposerver
+ssh repos.scl2pip.dk mkdir /usr/share/nginx/html/RPMS/x86_64 >/dev/null 2>&1
+
 
 #META package
 echo "`date`: {{ organisation }} {{ project }} Build the metapackage."
@@ -44,6 +47,8 @@ else
   if [[ $? == 0 ]];
   then
     echo "`date`: {{ organisation }} {{ project }} SCL metapackage installed ok"
+    scp /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm repos.pip2scl.dk:/usr/share/nginx/RPMS/x86_64/
+
   else
     echo "`date`: {{ organisation }} {{ project }} SCL metapackage install failed"
     exit 1
@@ -151,3 +156,5 @@ done
 scp /root/{{ organisation }}.{{ project }}.project.spec  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
 scp  /tmp/excluded.lst root@repos.pip2scl.dk:/usr/share/nginx/html/PROJECTS/{{ organisation }}.{{ project }}.excluded.txt
 cat  /tmp/excluded.lst
+
+ssh root@repos.pip2scl.dk createrepo /usr/share/nginx/html/RPMS
