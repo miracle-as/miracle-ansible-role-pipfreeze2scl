@@ -65,6 +65,11 @@ pip3 install 2to3 >/dev/null 2>&1
 echo > /tmp/excluded.lst
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
+    PROJECTSH="/root/{{ organisation }}.{{ project }}.project.sh"
+    rm $PROJECTSH >/dev/null 2>&1
+    echo "#!/usr/bin/env bash" > $PROJECTSH
+    echo "" >> $PROJECTSH
+
     cd $DIR >/dev/null 2>&1
     MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
     MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
@@ -111,12 +116,6 @@ do
       then
         echo "`date`: {{ organisation }} {{ project }} Creating SPEC files for $MYPKG"
         rm /root/{{ organisation }}.{{ project }}.project.spec.add >/dev/null 2>&1
-        PROJECTSH="/root/{{ organisation }}.{{ project }}.project.sh"
-        rm $PROJECTSH >/dev/null 2>&1
-
-        echo "#!/usr/bin/env bash" > $PROJECTSH
-        echo "" >> $PROJECTSH
-
         cat dist/*.spec > $DIR.spec
         spec2scl $DIR.spec > $DIR.scl.pre.spec
         awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
