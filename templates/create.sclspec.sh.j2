@@ -186,6 +186,7 @@ do
     cd - >/dev/null 2>&1 
 done
 
+scp $PROJECTSH      root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS
 scp /root/{{ organisation }}.{{ project }}.project.spec      root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
 scp /root/{{ organisation }}.{{ project }}.project.spec.add  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
 scp  /tmp/excluded.lst root@repos.pip2scl.dk:/usr/share/nginx/html/PROJECTS/{{ organisation }}.{{ project }}.excluded.txt
