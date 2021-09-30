@@ -1,38 +1,9 @@
-- name: Dump all variables
-  action: template src=dumpall.j2 dest=/tmp/builder.ansible_dump.all
-
 - name: build_virtual_environments | ansible create directory example
   file:
     path: /var/lib/venv/{{ project }}/venv/rpmvenv/
     state: directory
     recurse: yes
   become: True
-
-
-- name: build_virtual_environments | Install tools on build servers
-  ansible.builtin.package:
-    name:  '{{ item  }}'
-    state: present
-  with_items:
-    - "git"
-    - "python3-pip"
-    - "platform-python-devel"
-    - "make" 
-    - "autoconf" 
-    - "automake" 
-    - "libtool" 
-    - "gcc"
-    - "zlib-devel"
-    - "rpm-build"
-    - "tree"
-    - "python3-virtualenv"
-      #    - "liberasurecode-devel"
-  become: True
-
-
-- name: Dump varianble
-  debug:
-    msg: "{{ repo_url }}"
 
 - name: 'build_virtual_environments | clone git repo ({{ project  }} - {{ version }})'
   ansible.builtin.git:
