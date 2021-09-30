@@ -171,7 +171,7 @@ do
           if [[ $? == 0 ]];
           then
             echo "`date`: {{ organisation }} {{ project }} SCL build SPEC file for $MYPKG populated"
-            echo "curl  http://repos.pip2scl.dk/SCRIPTS/${MYPKG}.scl.sh  |bash >> $PROJECTSH
+            echo "curl  http://repos.pip2scl.dk/SCRIPTS/${MYPKG}.scl.sh  |bash " >> $PROJECTSH
           else  
             echo "`date`: {{ organisation }} {{ project }} SCL build SPEC file for $MYPKG failed"
           fi
