@@ -167,11 +167,11 @@ do
         if [[ $? == 0 ]];
         then
           echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG populated"
+          echo "curl  http://repos.pip2scl.dk/SCRIPTS/${MYPKG}.scl.sh  |bash " >> $PROJECTSH
           scp /root/rpmbuild/SPECS/${ORG}.${PROJECT}.${MYPKG}.scl.spec   root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
           if [[ $? == 0 ]];
           then
             echo "`date`: {{ organisation }} {{ project }} SCL build SPEC file for $MYPKG populated"
-            echo "curl  http://repos.pip2scl.dk/SCRIPTS/${MYPKG}.scl.sh  |bash " >> $PROJECTSH
           else  
             echo "`date`: {{ organisation }} {{ project }} SCL build SPEC file for $MYPKG failed"
           fi
