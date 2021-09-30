@@ -22,15 +22,15 @@ echo "`date`: {{ organisation }} {{ project }} Build the metapackage."
 cd  >/dev/null 2>&1
 if [[ -f /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm ]];
 then
-  echo "`date`: {{ organisation }} {{ project }}SCL metapackage already build "
+  echo "`date`: {{ organisation }} {{ project }} SCL metapackage already build "
 else
 
   rpmbuild -ba {{ organisation }}.{{ project }}.meta.scl.spec >/dev/null 2>&1
   if [[ $? == 0 ]];
   then
-    echo "`date`: {{ organisation }} {{ project }}SCL metapackage build ok"
+    echo "`date`: {{ organisation }} {{ project }} SCL metapackage build ok"
   else
-    echo "`date`: {{ organisation }} {{ project }}SCL metapackage build failed"
+    echo "`date`: {{ organisation }} {{ project }} SCL metapackage build failed"
     exit 1
   fi
 fi
