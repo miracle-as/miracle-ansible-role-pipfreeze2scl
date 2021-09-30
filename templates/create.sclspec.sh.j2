@@ -110,6 +110,7 @@ do
       if [[ $LOOP == NO ]];
       then
         echo "`date`: {{ organisation }} {{ project }} Creating SPEC files for $MYPKG"
+        rm /root/{{ organisation }}.{{ project }}.project.spec.add >/dev/null 2>&1
         cat dist/*.spec > $DIR.spec
         spec2scl $DIR.spec > $DIR.scl.pre.spec
         awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
@@ -130,10 +131,7 @@ do
         echo "if [[ \$? == 0 ]];" >> $SCRIPT
         echo "then" >> $SCRIPT
         echo "  echo \"`date`: {{ organisation }} {{ project }} package build with python3\"" >> $SCRIPT
-        awk '/Group: / { print; print "{{ organisation }}-{{ project }}-REPLACEMYNAME==REPLACEMYVER" ; next }1' /root/{{ organisation }}.{{ project }}.project.spec  > /root/{{ organisation }}.{{ project }}.project.spec.add
-        sed -i "s/REPLACEMYNAME/${MYNAME}/" /root/{{ organisation }}.{{ project }}.project.spec.add
-        sed -i "s/REPLACEMYVER/${MYVER}/" /root/{{ organisation }}.{{ project }}.project.spec.add
-        mv /root/{{ organisation }}.{{ project }}.project.spec.add /root/{{ organisation }}.{{ project }}.project.spec
+        echo  "{{ organisation }}-{{ project }}- ${MYNAME}==${MYVERi} " >> /root/{{ organisation }}.{{ project }}.project.spec.add
         echo "else"   >> $SCRIPT
         echo "  echo \"`date`: {{ organisation }} {{ project }} package build failledi with python3\"" >> $SCRIPT
         echo "exit 1" >> $SCRIPT
@@ -153,7 +151,8 @@ do
     cd - >/dev/null 2>&1 
 done
 
-scp /root/{{ organisation }}.{{ project }}.project.spec  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+scp /root/{{ organisation }}.{{ project }}.project.spec      root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+scp /root/{{ organisation }}.{{ project }}.project.spec.add  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
 scp  /tmp/excluded.lst root@repos.pip2scl.dk:/usr/share/nginx/html/PROJECTS/{{ organisation }}.{{ project }}.excluded.txt
 cat  /tmp/excluded.lst
 
