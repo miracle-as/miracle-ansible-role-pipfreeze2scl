@@ -14,6 +14,7 @@
   ansible.posix.selinux:
     policy: targeted
     state: permissive
+  become: True
 
 - name: Enable codeready-builder repository
   shell: subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
@@ -41,6 +42,7 @@
     - "scl-utils-build"
     - "scl-utils"
     - "libffi-devel"
+  become: True
 
 
       #    - "liberasurecode-devel"
@@ -51,9 +53,11 @@
     group: root
     state: directory
     mode: '0700'
+  become: True
 
 - name: Copy key file to root
   shell: cp /home/vagrant/scldistro /root/.ssh/id_rsa
+  become: True
 
 - name: Set permissions
   ansible.builtin.file:
@@ -61,3 +65,13 @@
     owner: root
     group: root
     mode: '0600'
+  become: True
+
+- name: Copy file config to root ssh
+  ansible.builtin.copy:
+    src: config
+    dest: /root/.ssh/config
+    owner: root
+    group: root
+    mode: '0600'
+  become: True
