@@ -6,6 +6,7 @@
     path: /var/lib/venv/{{ project }}/venv/rpmvenv/
     state: directory
     recurse: yes
+  become: True
 
 
 - name: build_virtual_environments | Install tools on build servers
@@ -26,6 +27,7 @@
     - "tree"
     - "python3-virtualenv"
       #    - "liberasurecode-devel"
+  become: True
 
 
 - name: Dump varianble
@@ -40,23 +42,26 @@
     clone: yes
     update: yes
   become: True
-
+  
 - name: " build_virtual_environments | Cleanup - Recursively remove directory ({{ project }} - {{ version }})"
   ansible.builtin.file:
     path: '/tmp/builder/virtualenvironments/{{ project }}/{{ version }}/venv'
     state: absent
+  become: True
 
 - name: " build_virtual_environments | Build a virtual environment face 1 init virtual env  ({{ project }} - {{ version }})"
   pip:
     name: pip
     virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
     state: latest
+  become: True
 
 - name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ project }} - {{ version }})"
   pip:
     name: ['setuptools', 'setuptools-rust', 'wheel']
     virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
     state: latest
+  become: True
 
 
 
@@ -64,36 +69,43 @@
   pip:
     requirements: '/tmp/builder/checkout/{{ project }}/{{ version }}/requirements.txt'
     virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
+  become: True
 
 - name:  build_virtual_environments | Template a file to rpmvenv.json
   ansible.builtin.template:
     src: templates/rpmvenv.json.j2
     dest: '/var/lib/openstack/venv/{{ project }}/{{ version }}/rmpvenv.json'
     force: yes
+  become: True
 
 - name:  build_virtual_environments | create the final requierements.txt file
   shell: /var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze >   /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt
+  become: True
 
 - name:  build_virtual_environments |  distribute the requirements.txt file to repo server
   shell: scp /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt root@repos.pip2scl.dk:/usr/share/nginx/html/REQUIREMENTS/{{ organisation }}.{{ project }}.{{ scl_version }}.{{ scl_release }}.requirements.txt
+  become: True
 
 
 - name: Store file into /tmp/ostack/{{ version }}/{{ project }}.requirements.txt
   ansible.builtin.fetch:
     src:  /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt
     dest: /tmp/ostack/{{ version }}/{{ project }}.requirements.txt
+  become: True
     
 - name: " build_virtual_environments | Build a virtual for building packages face 1"
   pip:
     name: pip
     virtualenv: '/var/lib/openstack/venv/builder/venv'
     state: latest
+  become: True
 
 - name: " build_virtual_environments | Build a virtual for building packages face 2 "
   pip:
     name: ['setuptools', 'setuptools-rust', 'wheel',  'requirements-parser', 'requests' , 'pyp2rpm'  ]
     virtualenv: '/var/lib/openstack/venv/builder/venv'
     state: latest
+  become: True
 
 
 #
