@@ -6,7 +6,7 @@ echo "#!/usr/bin/env bash"  > $BUILDSH
 echo "" >> $BUILDSH
 echo "yum-config-manager --add-repo http://repos.pip2scl.dk/RPMS/" >> $BUILDSH
 echo "yum clean all" >> $BUILDSH
-echo "yum install yum install {{ organisation}}-{{ project }}-runtime.x86_64 >> $BUILDSH
+echo "yum install yum install {{ organisation}}-{{ project }}-runtime.x86_64" >> $BUILDSH
 echo "" >> $BUILDSH
 
 
