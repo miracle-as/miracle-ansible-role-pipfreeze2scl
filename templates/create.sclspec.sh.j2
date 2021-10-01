@@ -179,6 +179,7 @@ do
           echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG populated"
           echo "curl  http://repos.pip2scl.dk/SCRIPTS/${MYPKG}.scl.sh  |bash " >> $PROJECTSH
           scp /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec   root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
+
           if [[ $? == 0 ]];
           then
             echo "`date`: {{ organisation }} {{ project }} SCL build SPEC file for $MYPKG populated"
@@ -202,4 +203,5 @@ scp $BUILDSH  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS
 scp  /tmp/excluded.lst root@repos.pip2scl.dk:/usr/share/nginx/html/PROJECTS/{{ organisation }}.{{ project }}.excluded.txt
 cat  /tmp/excluded.lst
 
+ssh root@repos.pip2scl.dk yum install -y createrepo
 ssh root@repos.pip2scl.dk createrepo /usr/share/nginx/html/RPMS
