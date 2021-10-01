@@ -42,6 +42,7 @@
     - "scl-utils-build"
     - "scl-utils"
     - "libffi-devel"
+    - "createrepo"
   become: True
 
 
