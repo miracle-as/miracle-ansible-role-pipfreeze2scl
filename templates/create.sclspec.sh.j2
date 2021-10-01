@@ -118,8 +118,8 @@ do
         rm /root/{{ organisation }}.{{ project }}.project.spec.add >/dev/null 2>&1
         cat dist/*.spec > $DIR.spec
         spec2scl $DIR.spec > $DIR.scl.pre.spec
-        awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
-        cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }} #' > $DIR.scl.pre.spec.2
+        awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/root#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
+        cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #' > $DIR.scl.pre.spec.2
         cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
         MYVER=`echo $MYPKG | rev | awk -F"-" '{ print $1 }' |rev` 
         MYNAME=`echo $MYPKG | awk -F"-${MYVER}" '{ print $1 }'`
