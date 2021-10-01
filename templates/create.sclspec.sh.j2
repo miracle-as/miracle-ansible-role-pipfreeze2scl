@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 PROJECT=$2
 ORG=$1
+BUILDSH="/root/{{ organisation }}.{{ project }}.{{ scl_version }}.{{ scl_release }}.build.sh"
+echo "#!/usr/bin/env bash"  > $BUILDSH
+echo "" >> $BUILDSH
+echo "yum-config-manager --add-repo http://repos.pip2scl.dk/RPMS/" >> $BUILDSH
+echo "yum clean all" >> $BUILDSH
+echo "yum install yum install {{ organisation}}-{{ project }}-runtime.x86_64 >> $BUILDSH
+echo "" >> $BUILDSH
+
+
+
 echo "`date`: {{ organisation }} {{ project }} Creating software Collection for {{ organisation }} - project {{ project }}."
 
 #PREPARE
@@ -48,7 +58,7 @@ else
   then
     echo "`date`: {{ organisation }} {{ project }} SCL metapackage installed ok"
     scp /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm repos.pip2scl.dk:/usr/share/nginx/RPMS/x86_64/
-
+    ssh root@repos.pip2scl.dk sudo createrepo /usr/share/nginx/html/RPMS
   else
     echo "`date`: {{ organisation }} {{ project }} SCL metapackage install failed"
     exit 1
@@ -129,7 +139,7 @@ do
       
         cd .. >/dev/null 2>&1
         tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
-        scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES >/dev/null 2>&2
+        scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES >/dev/null 2>&1
         SCRIPT="build_{{ organisation }}_{{ project }}.$MYPKG.scl.sh"
         echo "#!/usr/bin/env bash" > $SCRIPT
         echo "" >> $SCRIPT
@@ -163,6 +173,7 @@ do
         echo ""  >> $SCRIPT
 
         scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS/ >/dev/null 2>&1
+        echo "curl root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS/$SCRIPT | bash"  >> $BUILDSH
         if [[ $? == 0 ]];
         then
           echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG populated"
@@ -187,7 +198,7 @@ done
 
 scp $PROJECTSH      root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS
 scp /root/{{ organisation }}.{{ project }}.project.spec      root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
-scp /root/{{ organisation }}.{{ project }}.project.spec.add  root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS
+scp $BUILDSH  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS
 scp  /tmp/excluded.lst root@repos.pip2scl.dk:/usr/share/nginx/html/PROJECTS/{{ organisation }}.{{ project }}.excluded.txt
 cat  /tmp/excluded.lst
 
