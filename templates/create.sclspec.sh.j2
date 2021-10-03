@@ -173,7 +173,7 @@ do
         echo ""  >> $SCRIPT
 
         scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS/ >/dev/null 2>&1
-        echo "curl root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS/$SCRIPT | bash"  >> $BUILDSH
+        echo "curl http://repos.pip2scl.dk:/SCRIPTS/$SCRIPT | bash"  >> $BUILDSH
         if [[ $? == 0 ]];
         then
           echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG populated"
