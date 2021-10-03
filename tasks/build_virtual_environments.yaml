@@ -29,7 +29,7 @@
 
 - name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ project }} - {{ version }})"
   pip:
-    name: ['setuptools', 'setuptools-rust', 'wheel']
+    name: ['setuptools-rust', 'wheel']
     virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
     state: latest
   become: True
@@ -73,7 +73,7 @@
 
 - name: " build_virtual_environments | Build a virtual for building packages face 2 "
   pip:
-    name: ['setuptools', 'setuptools-rust', 'wheel',  'requirements-parser', 'requests' , 'pyp2rpm'  ]
+    name: ['setuptools-rust', 'wheel',  'requirements-parser', 'requests' , 'pyp2rpm'  ]
     virtualenv: '/var/lib/openstack/venv/builder/venv'
     state: latest
   become: True
