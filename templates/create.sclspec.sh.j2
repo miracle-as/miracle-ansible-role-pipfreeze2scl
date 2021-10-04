@@ -2,6 +2,8 @@
 PROJECT=$2
 ORG=$1
 BUILDSH="/root/{{ organisation }}.{{ project }}.{{ scl_version }}.{{ scl_release }}.build.sh"
+DEPENDECIES="/tmp/dependecies.lst"
+echo > $DEPENDECIES
 echo "#!/usr/bin/env bash"  > $BUILDSH
 echo "" >> $BUILDSH
 echo "yum-config-manager --add-repo http://repos.pip2scl.dk/RPMS/" >> $BUILDSH
@@ -132,6 +134,7 @@ do
         cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
         MYVER=`echo $MYPKG | rev | awk -F"-" '{ print $1 }' |rev` 
         MYNAME=`echo $MYPKG | awk -F"-${MYVER}" '{ print $1 }'`
+        echo "$MYNAME;$MYVER >> $DEPENDECIES
         echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG Name: $MYNAME Version: $MYVER"
         cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec
         scp /root/rpmbuild/SPECS/${ORG}.{{ project }}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
@@ -214,12 +217,23 @@ awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation
 cat dist/{{ project }}.scl.spec.pre.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #' > dist/{{ project }}.scl.spec.pre.2
 cat dist/{{ project }}.scl.spec.pre.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/{{ organisation }}.{{ project }}.{{ version }}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > dist/{{ project }}.scl.spec.pre.3
 echo "`date`: {{ organisation }} {{ project }} Building script for {{ project }} - {{ version }}"
-cat dist/{{ project }}.scl.spec.pre.3 | sed "s#setup -n #setup -n {{ project }}-{{ version  }}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec
-scp /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
+cat dist/{{ project }}.scl.spec.pre.3 | sed "s#setup -n #setup -n {{ project }}-{{ version  }}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq
+
 MYPWD=`pwd | rev | awk -F'/' '{ print $1 }'|rev `
 cd ..
 tar czvf /root/rpmbuild/SOURCES/{{ organisation }}.{{ project }}.{{ version }}.tar.gz $MYPWD/
 scp /root/rpmbuild/SOURCES/{{ organisation }}.{{ project }}.{{ version }}.tar.gz oot@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
+
+for DEP in `cat $DEPENDECIES`
+do
+  MYNAME=`echo $DEP|awk -F';' '{ print $1 }'`
+  MYVER=`echo $DEP|awk -F';' '{ print $2 }'`
+  awk '/Group:/ { print; print "Requires: ${MYNAMR} = ${MYVER}" ; next }1' /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
+  mv /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq
+done
+
+mv /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec
+scp /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
 
 
 echo "`date`: {{ organisation }} {{ project }} The end"
