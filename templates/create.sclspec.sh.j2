@@ -7,8 +7,9 @@ echo > $DEPENDECIES
 echo "#!/usr/bin/env bash"  > $BUILDSH
 echo "" >> $BUILDSH
 echo "yum-config-manager --add-repo http://repos.pip2scl.dk/RPMS/" >> $BUILDSH
+echo 'gpgcheck = 0 >> repos.pip2scl.dk_RPMS_.repo ' >> $BUILDSH
 echo "yum clean all" >> $BUILDSH
-echo "yum install yum install {{ organisation}}-{{ project }}-runtime.x86_64" >> $BUILDSH
+echo "yum install yum install -y {{ organisation}}-{{ project }}-runtime.x86_64" >> $BUILDSH
 echo "" >> $BUILDSH
 
 
