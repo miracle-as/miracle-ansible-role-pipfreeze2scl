@@ -13,7 +13,7 @@ echo "then" >>  $BUILDSH
 echo '  echo "gpgcheck = 0" >> /etc/yum.repos.d/repos.pip2scl.dk_RPMS_.repo ' >> $BUILDSH
 echo 'fi' >> $BUILDSH
 echo "yum clean all" >> $BUILDSH
-echo "yum install yum install -y {{ organisation}}-{{ project }}-runtime.x86_64" >> $BUILDSH
+echo "yum install  -y {{ organisation}}-{{ project }}-runtime.x86_64" >> $BUILDSH
 echo "" >> $BUILDSH
 
 
