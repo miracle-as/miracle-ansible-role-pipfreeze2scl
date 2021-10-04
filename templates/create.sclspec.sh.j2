@@ -233,7 +233,8 @@ for DEP in `cat $DEPENDECIES`
 do
   MYNAME=`echo $DEP|awk -F';' '{ print $1 }'`
   MYVER=`echo $DEP|awk -F';' '{ print $2 }'`
-  awk '/Group:/ { print; print "Requires: {{ organisation}}-{{ project}}-${MYNAMR} = ${MYVER}" ; next }1' /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
+  awk '/Group:/ { print; print "Requires: {{ organisation}}-{{ project}}-MYNAMEEQMYVER" ; next }1' /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
+  sed -i "s/MYNAMEEQMYVER/${MYNAME} = ${MYVER}/" /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
   mv /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq
 done
 
