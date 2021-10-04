@@ -3,8 +3,3 @@
 
 - name: build_scl_rpm | create_specfiles
   include: create_specfiles
-
-
-  # name: build_rpms
-  #  include: build_rpms.yaml
-
