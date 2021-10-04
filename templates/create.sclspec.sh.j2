@@ -213,7 +213,10 @@ spec2scl dist/{{ project }}.spec > dist/{{ project }}.scl.spec.pre
 awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/root#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
 cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #' > $DIR.scl.pre.spec.2
 cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
+touch ChangeLog
+touch AUTHORS
 echo "`date`: {{ organisation }} {{ project }} Building script for {{ project }} - {{ version }}"
 cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n {{ project }}-{{ version  }}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec
 scp /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
+
 echo "`date`: {{ organisation }} {{ project }} The end"
