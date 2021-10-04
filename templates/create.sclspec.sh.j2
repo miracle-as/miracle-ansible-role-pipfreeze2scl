@@ -7,7 +7,7 @@ echo > $DEPENDECIES
 echo "#!/usr/bin/env bash"  > $BUILDSH
 echo "" >> $BUILDSH
 echo "yum-config-manager --add-repo http://repos.pip2scl.dk/RPMS/" >> $BUILDSH
-echo 'grep -v "gpgcheck" repos.pip2scl.dk_RPMS_.repo >/dev/null 2>&1'  >> $BUILDSH
+echo 'grep -v "gpgcheck" /etc/yum.repos.d/repos.pip2scl.dk_RPMS_.repo >/dev/null 2>&1'  >> $BUILDSH
 echo 'if [[ $? == 0 ]];' >> $BUILDSH
 echo "then" >>  $BUILDSH
 echo '  echo "gpgcheck = 0" >> /etc/yum.repos.d/repos.pip2scl.dk_RPMS_.repo ' >> $BUILDSH
@@ -174,7 +174,7 @@ do
         echo "then" >> $SCRIPT
         echo "  echo \"\`date\`: met keystone package build with python3\"" >> $SCRIPT
         echo "else" >> $SCRIPT
-        echo "  echo \"\`date\`: met keystone package build failledi with python3\"" >> $SCRIPT
+        echo "  echo \"\`date\`: met keystone package build failled with python3\"" >> $SCRIPT
         echo "  exit 1" >> $SCRIPT
         echo "fi" >> $SCRIPT
         echo ""  >> $SCRIPT
@@ -233,7 +233,7 @@ for DEP in `cat $DEPENDECIES`
 do
   MYNAME=`echo $DEP|awk -F';' '{ print $1 }'`
   MYVER=`echo $DEP|awk -F';' '{ print $2 }'`
-  awk '/Group:/ { print; print "Requires: ${MYNAMR} = ${MYVER}" ; next }1' /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
+  awk '/Group:/ { print; print "Requires: {{ organisation}}-{{ project}}-${MYNAMR} = ${MYVER}" ; next }1' /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
   mv /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq
 done
 
