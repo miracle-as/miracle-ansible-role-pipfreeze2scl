@@ -35,7 +35,7 @@
     group: root
     owner: root
 
--name: "build_rpms | download sources
+-name: "build_rpms | download sources"
   ansible.builtin.shell: /var/lib/openstack/venv/builder/venv/bin/python /usr/local/bin/pip-downloader.py
   args:
     chdir: /opt
