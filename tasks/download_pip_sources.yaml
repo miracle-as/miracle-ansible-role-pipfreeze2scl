@@ -29,7 +29,7 @@
 - name: Download Tomcat using get_url
   become: yes
   get_url:
-    url: {{ requirementsfile }}
+    url: "{{ requirementsfile }}"
     dest: /opt/requirements.txt
     mode: 0755
     group: root
