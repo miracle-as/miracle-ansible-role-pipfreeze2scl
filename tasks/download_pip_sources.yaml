@@ -24,13 +24,21 @@
     mode: '0755'
 
 
-- name: "build_rpms | Create requirements file"
-  shell: "/var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze > /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt"
+#- name: "build_rpms | Create requirements file"
+#  shell: "/var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze > /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt"
+- name: Download Tomcat using get_url
+  become: yes
+  get_url:
+    url: {{ requirementsfile }}
+    dest: /opt/requirements.txt
+    mode: 0755
+    group: root
+    owner: root
 
-- name: " build_rpms |  Running downloader script to collect python sources"
+-name: "build_rpms | download sources
   ansible.builtin.shell: /var/lib/openstack/venv/builder/venv/bin/python /usr/local/bin/pip-downloader.py
   args:
-    chdir: /var/lib/openstack/venv/{{ project }}/{{ version }}
+    chdir: /opt
   become: True
 
 
