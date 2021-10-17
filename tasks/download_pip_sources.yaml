@@ -32,7 +32,7 @@
 
 - name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ project }} - {{ version }})"
   pip:
-    name: ['setuptools-rust', 'wheel']
+    name: ['setuptools-rust', 'wheel', 'requirements-parser']
     virtualenv: '/var/lib/venv'
     state: latest
   become: True
