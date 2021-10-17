@@ -26,14 +26,14 @@
 - name: " build_virtual_environments | Build a virtual environment face 1 init virtual env  ({{ project }} - {{ version }})"
   pip:
     name: pip
-    virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
+    virtualenv: '/var/lib/venv'
     state: latest
   become: True
 
 - name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ project }} - {{ version }})"
   pip:
     name: ['setuptools-rust', 'wheel']
-    virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
+    virtualenv: '/var/lib/venv'
     state: latest
   become: True
 
@@ -50,7 +50,7 @@
     owner: root
 
 - name: "build_rpms | download sources"
-  ansible.builtin.shell: /var/lib/openstack/venv/builder/venv/bin/python /usr/local/bin/pip-downloader.py
+  ansible.builtin.shell: /var/lib/venv/bin/python /usr/local/bin/pip-downloader.py
   args:
     chdir: /opt
   become: True
