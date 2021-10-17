@@ -214,6 +214,9 @@ cat  /tmp/excluded.lst
 ssh root@repos.pip2scl.dk yum install -y createrepo
 ssh root@repos.pip2scl.dk createrepo /usr/share/nginx/html/RPMS
 
+
+
+
 cd /tmp/builder/checkout/{{ project }}/{{ version  }}
 pip install wheel
 python3 setup.py bdist_rpm --spec-only
