@@ -1,0 +1,8 @@
+- name: 'checkout_source | clone git repo ({{ project  }} - {{ version }})'
+  ansible.builtin.git:
+    repo: '{{ repo_url }}'
+    dest: '/tmp/builder/checkout/{{ project }}/{{ version }}'
+    version: '{{ branch }}'
+    clone: yes
+    update: yes
+  become: True
