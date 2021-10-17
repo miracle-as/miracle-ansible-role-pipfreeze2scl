@@ -23,6 +23,20 @@
     group: root
     mode: '0755'
 
+- name: " build_virtual_environments | Build a virtual environment face 1 init virtual env  ({{ project }} - {{ version }})"
+  pip:
+    name: pip
+    virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
+    state: latest
+  become: True
+
+- name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ project }} - {{ version }})"
+  pip:
+    name: ['setuptools-rust', 'wheel']
+    virtualenv: '/var/lib/openstack/venv/{{ project }}/{{ version }}/venv'
+    state: latest
+  become: True
+
 
 #- name: "build_rpms | Create requirements file"
 #  shell: "/var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze > /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt"
