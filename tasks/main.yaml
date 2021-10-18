@@ -2,6 +2,6 @@
 #- include: build_virtual_environments.yaml
 - include: download_pip_sources.yaml
 - include: build_scl_rpm.yaml
-- include: checkout_source.yaml
+#- include: checkout_source.yaml
 
 
