@@ -206,23 +206,6 @@ cat  /tmp/excluded.lst
 
 ssh root@repos.pip2scl.dk yum install -y createrepo
 ssh root@repos.pip2scl.dk createrepo /usr/share/nginx/html/RPMS
-
-cd /tmp/builder/checkout/{{ project }}/{{ version  }}
-pip install wheel
-python3 setup.py bdist_rpm --spec-only
-spec2scl dist/{{ project }}.spec > dist/{{ project }}.scl.spec.pre
-
-awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/root#'\" INSTALLED_FILES " ; next }1' dist/{{ project }}.scl.spec.pre  > dist/{{ project }}.scl.spec.pre.1
-cat dist/{{ project }}.scl.spec.pre.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #' > dist/{{ project }}.scl.spec.pre.2
-cat dist/{{ project }}.scl.spec.pre.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/{{ organisation }}.{{ project }}.{{ version }}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > dist/{{ project }}.scl.spec.pre.3
-echo "`date`: {{ organisation }} {{ project }} Building script for {{ project }} - {{ version }}"
-cat dist/{{ project }}.scl.spec.pre.3 | sed "s#setup -n #setup -n {{ version  }}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq
-
-MYPWD=`pwd | rev | awk -F'/' '{ print $1 }'|rev `
-cd ..
-tar czvf /root/rpmbuild/SOURCES/{{ project }}.{{ version }}.tar.gz $MYPWD/
-scp /root/rpmbuild/SOURCES/{{ project }}.{{ version }}.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
-
 ssh root@repos.pip2scl.dk mkdir /usr/share/nginx/html/DEPENDENCIES >/dev/null 2>&1
 ssh root@repos.pip2scl.dk chown nginx /usr/share/nginx/html/DEPENDENCIES >/dev/null 2>&1
 scp $DEPENDECIES root@repos.pip2scl.dk:/usr/share/nginx/html/DEPENDENCIES/{{ project }}-{{ scl_version }}.dep >/dev/null 2>&1
