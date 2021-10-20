@@ -230,20 +230,19 @@ cat dist/{{ project }}.scl.spec.pre.3 | sed "s#setup -n #setup -n {{ version  }}
 
 MYPWD=`pwd | rev | awk -F'/' '{ print $1 }'|rev `
 cd ..
-tar czvf /root/rpmbuild/SOURCES/{{ organisation }}.{{ project }}.{{ version }}.tar.gz $MYPWD/
-scp /root/rpmbuild/SOURCES/{{ organisation }}.{{ project }}.{{ version }}.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
+tar czvf /root/rpmbuild/SOURCES/{{ project }}.{{ version }}.tar.gz $MYPWD/
+scp /root/rpmbuild/SOURCES/{{ project }}.{{ version }}.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
 
 for DEP in `cat $DEPENDECIES`
 do
   MYNAME=`echo $DEP|awk -F';' '{ print $1 }'`
   MYVER=`echo $DEP|awk -F';' '{ print $2 }'`
-  awk '/Group:/ { print; print "Requires: {{ organisation}}-{{ project}}-MYNAMEEQMYVER" ; next }1' /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
+  awk '/Group:/ { print; print "Requires: {{ organisation }}-{{ project }}-MYNAMEEQMYVER" ; next }1' /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
   sed -i "s/MYNAMEEQMYVER/${MYNAME} = ${MYVER}/" /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
   mv /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq
 done
 
 mv /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec
 scp /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
-
 
 echo "`date`: {{ organisation }} {{ project }} The end"
