@@ -95,75 +95,82 @@ pip3 install spec2scl >/dev/null 2>&1
 echo > /tmp/excluded.lst
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
-    PROJECTSH="/root/{{ organisation }}.{{ project }}.project.sh"
-    rm $PROJECTSH >/dev/null 2>&1
-    echo "#!/usr/bin/env bash" > $PROJECTSH
-    echo "" >> $PROJECTSH
+  PROJECTSH="/root/{{ organisation }}.{{ project }}.project.sh"
+  rm $PROJECTSH >/dev/null 2>&1
+  echo "#!/usr/bin/env bash" > $PROJECTSH
+  echo "" >> $PROJECTSH
 
-    cd $DIR >/dev/null 2>&1
-    MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
-    MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
-    pip3 install --upgrade pip >/dev/null 2>&1
+  cd $DIR >/dev/null 2>&1
+  MYPKG=`echo $PWD|  rev|awk -F'/' '{ print $1 }'|rev`
+  MYNAME=`echo $PWD|  rev|awk -F'/' '{ print $2 }'|rev`
+  pip3 install --upgrade pip >/dev/null 2>&1
 
-    #if we have a setup.py 
+  #if we have a setup.py 
 
-    if [[ -f setup.py ]];
+  if [[ -f setup.py ]];
+  then
+    add_line_html  "`date`: {{ organisation }} {{ project }} Building $MYPKG"
+    echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG"
+    #loop until build dependecies are cleare
+    #Try with python 3
+    COUNT="0"
+    LOOP="YES"
+    while [ $LOOP == "YES" ] && [ $COUNT -lt 5 ] ;
+    do
+      NEWCOUNT=`echo $COUNT |awk '{ print $1 + 1 }'`
+      COUNT=`echo $NEWCOUNT`
+      echo "`date`: {{ organisation }} {{ project }} looping to detect dependecies on $MYPKG "
+      python3 setup.py bdist_rpm --spec-only >/tmp/std.log 2>&1
+      if [[ $? == 0 ]];
+      then
+        LOOP="NO"
+      else
+        # Exception  #1 : Modules need to build
+        for MODULE in `cat  /tmp/std.log |grep "No module named" |awk -F"'" '{ print $2 }'`
+        do
+          pip3 install $MODULE
+        done
+
+        # Exception  #1 : Package dir missing
+        for PKGDIR in `cat  /tmp/std.log |grep "error: package directory" |awk -F"'" '{ print $2 }'`
+        do
+          mkdir $PKGDIR
+          touch ${PKGDIR}/__init__.py
+        done
+
+      fi
+    done
+
+    echo "`date`: {{ organisation }} {{ project }} looping ended on $MYPKG ($COUNT/$LOOP)"
+    if [[ $LOOP == NO ]];
     then
-      
-      add_line_html  "`date`: {{ organisation }} {{ project }} Building script for $MYPKG"
-      echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG"
-      #loop until build dependecies are cleare
-      #Try with python 3
-      COUNT="0"
-      LOOP="YES"
-      while [ $LOOP == "YES" ] && [ $COUNT -lt 5 ] ;
-      do
-        NEWCOUNT=`echo $COUNT |awk '{ print $1 + 1 }'`
-        COUNT=`echo $NEWCOUNT`
-        echo "`date`: {{ organisation }} {{ project }} looping to detect dependecies on $MYPKG "
-
-        python3 setup.py bdist_rpm --spec-only >/tmp/std.log 2>&1
+      echo "`date`: {{ organisation }} {{ project }} Creating SPEC files for $MYPKG"
+      rm /root/{{ organisation }}.{{ project }}.project.spec.add >/dev/null 2>&1
+      cat dist/*.spec > $DIR.spec
+      spec2scl $DIR.spec > $DIR.scl.pre.spec
+      awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/root#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
+      cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #' > $DIR.scl.pre.spec.2
+      cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
+      MYVER=`echo $MYPKG | rev | awk -F"-" '{ print $1 }' |rev` 
+      MYNAME=`echo $MYPKG | awk -F"-${MYVER}" '{ print $1 }'`
+      echo "$MYNAME;$MYVER" >> $DEPENDECIES
+      echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG Name: $MYNAME Version: $MYVER"
+      cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec
+      scp /root/rpmbuild/SPECS/${ORG}.{{ project }}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
+    
+      cd .. >/dev/null 2>&1
+      tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
+      scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES >/dev/null 2>&1
+      SCRIPT="build_{{ organisation }}_{{ project }}.$MYPKG.scl.sh"
+      STATUS="build_{{ organisation }}_{{ project }}.$MYPKG.scl.status
+      if [[ -f $STATUS ]];
+      then 
+        cat $STATUS |grep "OK"
         if [[ $? == 0 ]];
         then
-          LOOP="NO"
-        else
-          # Exception  #1 : Modules need to build
-          for MODULE in `cat  /tmp/std.log |grep "No module named" |awk -F"'" '{ print $2 }'`
-          do
-            pip3 install $MODULE
-          done
-
-          # Exception  #1 : Package dir missing
-          for PKGDIR in `cat  /tmp/std.log |grep "error: package directory" |awk -F"'" '{ print $2 }'`
-          do
-            mkdir $PKGDIR
-            touch ${PKGDIR}/__init__.py
-          done
-
+          add_line_html  "`date`: {{ organisation }} {{ project }} script already created and executed ok script for $MYPKG"
         fi
-      done
-
-      echo "`date`: {{ organisation }} {{ project }} looping ended on $MYPKG ($COUNT/$LOOP)"
-      if [[ $LOOP == NO ]];
-      then
-        echo "`date`: {{ organisation }} {{ project }} Creating SPEC files for $MYPKG"
-        rm /root/{{ organisation }}.{{ project }}.project.spec.add >/dev/null 2>&1
-        cat dist/*.spec > $DIR.spec
-        spec2scl $DIR.spec > $DIR.scl.pre.spec
-        awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/root#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
-        cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #' > $DIR.scl.pre.spec.2
-        cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
-        MYVER=`echo $MYPKG | rev | awk -F"-" '{ print $1 }' |rev` 
-        MYNAME=`echo $MYPKG | awk -F"-${MYVER}" '{ print $1 }'`
-        echo "$MYNAME;$MYVER" >> $DEPENDECIES
-        echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG Name: $MYNAME Version: $MYVER"
-        cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec
-        scp /root/rpmbuild/SPECS/${ORG}.{{ project }}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
-      
-        cd .. >/dev/null 2>&1
-        tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
-        scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES >/dev/null 2>&1
-        SCRIPT="build_{{ organisation }}_{{ project }}.$MYPKG.scl.sh"
+      else
         echo "#!/usr/bin/env bash" > $SCRIPT
         echo "" >> $SCRIPT
         echo "mkdir /root/rpmbuild/SPECS >/dev/null 2>&1" >> $SCRIPT
@@ -196,22 +203,19 @@ do
         echo ""  >> $SCRIPT
 
         scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS/ >/dev/null 2>&1
-        bash $BUILDSH
+        bash $BUILDSH > 
         if [[ $? == 0 ]];
         then
           add_line_html  "`date`: {{ organisation }} {{ project }} script executed ok script for $MYPKG"
         else
           add_line_html  "`date`: {{ organisation }} {{ project }} script failed for $MYPKG"
         fi
-
-
         echo "curl http://repos.pip2scl.dk:/SCRIPTS/$SCRIPT | bash"  >> $BUILDSH
         if [[ $? == 0 ]];
         then
           echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG populated"
           echo "curl  http://repos.pip2scl.dk/SCRIPTS/${MYNAME}-${MYVER}.scl.sh  |bash " >> $PROJECTSH
           scp /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec   root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
-
           if [[ $? == 0 ]];
           then
             echo "`date`: {{ organisation }} {{ project }} SCL build SPEC file for $MYPKG populated"
@@ -226,7 +230,8 @@ do
         echo $MYPKG >> /tmp/excluded.lst
       fi
     fi
-    cd - >/dev/null 2>&1 
+  fi
+  cd - >/dev/null 2>&1 
 done
 
 scp $PROJECTSH      root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS
