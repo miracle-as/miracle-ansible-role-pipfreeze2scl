@@ -2,7 +2,7 @@
 PROJECT=$2
 ORG=$1
 BUILDSH="/root/{{ organisation }}.{{ project }}.{{ scl_version }}.{{ scl_release }}.build.sh"
-DEPENDECIES="/tmp/dependecies.lst"
+DEPENDECIES="/tmp/dependecies.{{ project }}.{{ scl_version}}.lst"
 echo > $DEPENDECIES
 echo "#!/usr/bin/env bash"  > $BUILDSH
 echo "" >> $BUILDSH
@@ -233,16 +233,9 @@ cd ..
 tar czvf /root/rpmbuild/SOURCES/{{ project }}.{{ version }}.tar.gz $MYPWD/
 scp /root/rpmbuild/SOURCES/{{ project }}.{{ version }}.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
 
-for DEP in `cat $DEPENDECIES`
-do
-  MYNAME=`echo $DEP|awk -F';' '{ print $1 }'`
-  MYVER=`echo $DEP|awk -F';' '{ print $2 }'`
-  awk '/Group:/ { print; print "Requires: {{ organisation }}-{{ project }}-MYNAMEEQMYVER" ; next }1' /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
-  sed -i "s/MYNAMEEQMYVER/${MYNAME} = ${MYVER}/" /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new 
-  mv /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq.new /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq
-done
+ssh root@repos.pip2scl.dk mkdir /usr/share/nginx/html/DEPENDECIES >/dev/null 2>&1
+ssh root@repos.pip2scl.dk chown nginx /usr/share/nginx/html/DEPENDECIES >/dev/null 2>&1
+scp $DEPENDECIES root@repos.pip2scl.dk:/usr/share/nginx/html/DEPENDECIES/{{ project }}-{{ scl_version }}.dep >/dev/null 2>&1
 
-mv /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec.prereq /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec
-scp /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.{{ version }}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
-
+echo "`date`: dependecies created and uploaded"
 echo "`date`: {{ organisation }} {{ project }} The end"
