@@ -16,10 +16,7 @@ echo "yum clean all" >> $BUILDSH
 echo "yum install  -y {{ organisation}}-{{ project }}-runtime.x86_64" >> $BUILDSH
 echo "" >> $BUILDSH
 
-
-
 echo "`date`: {{ organisation }} {{ project }} Creating software Collection for {{ organisation }} - project {{ project }}."
-
 #PREPARE
 echo "`date`: {{ organisation }} {{ project }} Prepare run."
 mkdir ~/.ssh >/dev/null 2>&1
@@ -213,9 +210,6 @@ cat  /tmp/excluded.lst
 
 ssh root@repos.pip2scl.dk yum install -y createrepo
 ssh root@repos.pip2scl.dk createrepo /usr/share/nginx/html/RPMS
-
-
-
 
 cd /tmp/builder/checkout/{{ project }}/{{ version  }}
 pip install wheel
