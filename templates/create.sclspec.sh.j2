@@ -197,6 +197,14 @@ do
 
         scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS/ >/dev/null 2>&1
         bash $BUILDSH
+        if [[ $? == 0 ]];
+        then
+          add_line_html  "`date`: {{ organisation }} {{ project }} script executed ok script for $MYPKG"
+        else
+          add_line_html  "`date`: {{ organisation }} {{ project }} script failed for $MYPKG"
+        fi
+
+
         echo "curl http://repos.pip2scl.dk:/SCRIPTS/$SCRIPT | bash"  >> $BUILDSH
         if [[ $? == 0 ]];
         then
