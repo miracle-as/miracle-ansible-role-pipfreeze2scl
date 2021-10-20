@@ -2,7 +2,7 @@
 
 init_html () {
   echo "<HTML>" > $HTML
-  echo "<HR>`date`<HR>" >>$HTNL
+  echo "<HR>`date`<HR>" >>$HTML
   echo '<meta http-equiv="refresh" content="5" >'  >> $HTML
   echo "<PRE>" >> $HTML
   scp $HTML root@repos.pip2scl.dk:/usr/share/nginx/html/{{ version }}.html
@@ -72,11 +72,10 @@ fi
 echo "`date`: {{ organisation }} {{ project }} install the metapackage runtime."
 cd 
 rpm -qa |grep "{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64" >/dev/null 2>&1
-if [[ $? == 0  ]];
+if [[ $? == 0 ]];
 then
   echo "`date`: {{ organisation }} {{ project }} metapackage runtime already installed."
 else
-
   rpm -i  /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm
   if [[ $? == 0 ]];
   then
@@ -92,7 +91,8 @@ fi
 pip3 install --upgrade pip >/dev/null 2>&1
 pip3 install spec2scl >/dev/null 2>&1
 
-echo > /tmp/excluded.lst
+rm  /tmp/excluded.lst 2>/dev/null 2>& 
+
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
   PROJECTSH="/root/{{ organisation }}.{{ project }}.project.sh"
@@ -162,7 +162,7 @@ do
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
       scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES >/dev/null 2>&1
       SCRIPT="build_{{ organisation }}_{{ project }}.$MYPKG.scl.sh"
-      STATUS="build_{{ organisation }}_{{ project }}.$MYPKG.scl.status
+      STATUS="build_{{ organisation }}_{{ project }}.$MYPKG.scl.status"
       if [[ -f $STATUS ]];
       then 
         cat $STATUS |grep "OK"
@@ -203,7 +203,7 @@ do
         echo ""  >> $SCRIPT
 
         scp $SCRIPT  root@repos.pip2scl.dk:/usr/share/nginx/html/SCRIPTS/ >/dev/null 2>&1
-        bash $BUILDSH 
+        bash $SCRIPT 
         if [[ $? == 0 ]];
         then
           add_line_html  "`date`: {{ organisation }} {{ project }} script executed ok script for $MYPKG"
@@ -226,10 +226,10 @@ do
         else
           echo "`date`: {{ organisation }} {{ project }} SCL build script for $MYPKG failed to be populated"
         fi 
-      else
-        echo "`date`: {{ organisation }} {{ project }} $MYPKG failed to be build and is excluded from the scl - "
-        echo $MYPKG >> /tmp/excluded.lst
       fi
+    else
+      echo "`date`: {{ organisation }} {{ project }} $MYPKG failed to be build and is excluded from the scl - "
+      echo $MYPKG >> /tmp/excluded.lst
     fi
   fi
   cd - >/dev/null 2>&1 
