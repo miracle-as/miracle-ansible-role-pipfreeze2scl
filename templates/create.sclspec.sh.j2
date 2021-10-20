@@ -8,6 +8,11 @@ init_html () {
   scp $HTML root@repos.pip2scl.dk:/usr/share/nginx/html/{{ version }}.html
 }
 
+add_line_html () {
+  echo "$1" >> $HTML
+  scp $HTML root@repos.pip2scl.dk:/usr/share/nginx/html/{{ version }}.html
+}
+
 
 
 
@@ -41,6 +46,7 @@ touch /root/rpmbuild/SOURCES/README
 touch /root/rpmbuild/SOURCES/LICENSE
 
 # Prep the reposerver
+
 ssh repos.pip2scl.dk mkdir /usr/share/nginx/html/RPMS/x86_64 >/dev/null 2>&1
 
 
@@ -103,6 +109,8 @@ do
 
     if [[ -f setup.py ]];
     then
+      
+      add_line_html  "`date`: {{ organisation }} {{ project }} Building script for $MYPKG"
       echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG"
       #loop until build dependecies are cleare
       #Try with python 3
