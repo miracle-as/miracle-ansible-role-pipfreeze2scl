@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+init_html () {
+  echo "<HTML>" > $HTML
+  echo "<HR>`date`<HR>" >>$HTNL
+  echo '<meta http-equiv="refresh" content="5" >'  >> $HTML
+  echo "<PRE>" >> $HTML
+  scp $HTML root@repos.pip2scl.dk:/usr/share/nginx/html/{{ version }}.html
+}
+
+
+
+
+HTML="/tmp/{{ version }}.html"
+init_html
+
 
 BUILDSH="/root/{{ organisation }}.{{ project }}.{{ scl_version }}.{{ scl_release }}.build.sh"
 DEPENDECIES="/tmp/dependecies.{{ project }}.{{ scl_version}}.lst"
