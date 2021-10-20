@@ -34,7 +34,7 @@
   shell: touch /root/rpmbuild/SOURCES/LICENSE
   become: True
 
-#- name: create_specfiles | run the builder script
-#  shell: /usr/local/bin/create.sclspec.sh
-#  become: True
+- name: create_specfiles | run the builder script
+  shell: /usr/local/bin/create.sclspec.sh
+  become: True
   
