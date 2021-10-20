@@ -233,9 +233,9 @@ cd ..
 tar czvf /root/rpmbuild/SOURCES/{{ project }}.{{ version }}.tar.gz $MYPWD/
 scp /root/rpmbuild/SOURCES/{{ project }}.{{ version }}.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES
 
-ssh root@repos.pip2scl.dk mkdir /usr/share/nginx/html/DEPENDECIES >/dev/null 2>&1
-ssh root@repos.pip2scl.dk chown nginx /usr/share/nginx/html/DEPENDECIES >/dev/null 2>&1
-scp $DEPENDECIES root@repos.pip2scl.dk:/usr/share/nginx/html/DEPENDECIES/{{ project }}-{{ scl_version }}.dep >/dev/null 2>&1
+ssh root@repos.pip2scl.dk mkdir /usr/share/nginx/html/DEPENDENCIES >/dev/null 2>&1
+ssh root@repos.pip2scl.dk chown nginx /usr/share/nginx/html/DEPENDENCIES >/dev/null 2>&1
+scp $DEPENDECIES root@repos.pip2scl.dk:/usr/share/nginx/html/DEPENDENCIES/{{ project }}-{{ scl_version }}.dep >/dev/null 2>&1
 
-echo "`date`: dependecies created and uploaded"
+echo "`date`: dependencies created and uploaded"
 echo "`date`: {{ organisation }} {{ project }} The end"
