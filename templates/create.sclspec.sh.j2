@@ -91,7 +91,7 @@ fi
 pip3 install --upgrade pip >/dev/null 2>&1
 pip3 install spec2scl >/dev/null 2>&1
 
-rm  /tmp/excluded.lst 2>/dev/null 2>& 
+echo > /tmp/excluded.lst 2>/dev/null 2>&1
 
 for DIR in `find /root/rpmbuild/SOURCES -maxdepth 2 -type d`
 do
@@ -110,6 +110,7 @@ do
   if [[ -f setup.py ]];
   then
     add_line_html  "`date`: {{ organisation }} {{ project }} Building $MYPKG"
+    
     echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG"
     #loop until build dependecies are cleare
     #Try with python 3
