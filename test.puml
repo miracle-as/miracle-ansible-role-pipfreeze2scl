@@ -1,0 +1,33 @@
+!include ../../../styles/PlantUML_StyleSheet.puml
+ 
+actor User as user
+participant Client as client #9EA0CA
+participant CIC as cic #05D686
+participant CLOVA as clova #05D686
+ 
+user ->> client: "Play classical music"
+ 
+activate client
+  client ->> cic: Sends the event message of user request\n("Play classical music")
+deactivate client
+ 
+activate  cic
+  cic ->> clova: Request user speech recognition
+deactivate cic
+ 
+activate clova
+  clova -> clova: Recognize speech
+ 
+  clova -> clova: Analyze semantics
+ 
+  clova -->> cic: Send semantics analysis result
+deactivate clova
+ 
+activate cic
+  cic -->> client: Sends the requested result as directive\n(guidance speech, audio information, play directs, etc.)
+deactivate cic
+ 
+activate client
+  client -> client: Handle a directive
+  client -->> user: Reporting handled results
+deactivate client
