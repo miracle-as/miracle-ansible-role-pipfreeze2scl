@@ -4,12 +4,12 @@ init_html () {
   echo "<HTML>" > $HTML
   echo "<HR>`date`<HR>" >>$HTML
   echo '<meta http-equiv="refresh" content="5" >'  >> $HTML
-  echo "<PRE>" >> $HTML
+  echo "<table border="1">" >>$HTML
   scp $HTML root@repos.pip2scl.dk:/usr/share/nginx/html/{{ version }}.html
 }
 
 add_line_html () {
-  echo "$1" >> $HTML
+  echo "<tr><td>$1</td><tr>" >> $HTML
   scp $HTML root@repos.pip2scl.dk:/usr/share/nginx/html/{{ version }}.html
 }
 
