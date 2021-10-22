@@ -49,19 +49,15 @@
     group: root
     owner: root
 
-- name: Download requirements add 
+- name: line insert
   become: yes
-  template:
-    src: requirements.txt.add.j2
-    dest: /opt/requirements.txt.add
-    mode: 0755
-    group: root
-    owner: root
-
-- name: Add extra requirements
-  become: yes
-  shell: sed -r  /opt/requirements.txt.add /opt/requirements.txt
-
+  lineinfile:
+    path: /opt/requirements.txt
+    line: 'Added Line 1'
+  loop:
+    - pip==21.3
+    - setuptools==58.0.4
+    - virtualenv==20.8.1
 
 - name: "build_rpms | download sources"
   ansible.builtin.shell: /var/lib/venv/bin/python /usr/local/bin/pip-downloader.py
