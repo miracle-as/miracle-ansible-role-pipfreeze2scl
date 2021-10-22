@@ -60,7 +60,7 @@
 
 - name: Add extra requirements
   become: yes
-  shell: sed -r  /opt/requirements.txt /opt/requirements.txt.add
+  shell: sed -r  /opt/requirements.txt.add /opt/requirements.txt
 
 
 - name: "build_rpms | download sources"
