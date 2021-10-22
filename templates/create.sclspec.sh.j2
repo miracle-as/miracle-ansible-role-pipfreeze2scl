@@ -80,7 +80,7 @@ else
   if [[ $? == 0 ]];
   then
     echo "`date`: {{ organisation }} {{ project }} SCL metapackage installed ok"
-    scp /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm repos.pip2scl.dk:/usr/share/nginx/RPMS/x86_64/
+    scp /root/rpmbuild/RPMS/x86_64/{{ organisation }}-{{ project }}-runtime-{{ scl_version }}-{{ scl_release }}.el8.x86_64.rpm repos.pip2scl.dk:/usr/share/nginx/html/RPMS/x86_64/
     ssh root@repos.pip2scl.dk sudo createrepo /usr/share/nginx/html/RPMS
   else
     echo "`date`: {{ organisation }} {{ project }} SCL metapackage install failed"
