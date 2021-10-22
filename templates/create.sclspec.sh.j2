@@ -146,19 +146,22 @@ do
     if [[ $LOOP == NO ]];
     then
       echo "`date`: {{ organisation }} {{ project }} Creating SPEC files for $MYPKG"
-      rm /root/{{ organisation }}.{{ project }}.project.spec.add >/dev/null 2>&1
-      cat dist/*.spec > $DIR.spec
-      spec2scl $DIR.spec > $DIR.scl.pre.spec
-      awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/root#'\" INSTALLED_FILES " ; next }1' $DIR.scl.pre.spec  > $DIR.scl.pre.spec.1
-      cat $DIR.scl.pre.spec.1 | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #' > $DIR.scl.pre.spec.2
-      cat $DIR.scl.pre.spec.2 | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE" > $DIR.scl.pre.spec.3
       MYVER=`echo $MYPKG | rev | awk -F"-" '{ print $1 }' |rev` 
       MYNAME=`echo $MYPKG | awk -F"-${MYVER}" '{ print $1 }'`
       echo "$MYNAME;$MYVER" >> $DEPENDECIES
-      echo "`date`: {{ organisation }} {{ project }} Building script for $MYPKG Name: $MYNAME Version: $MYVER"
-      cat $DIR.scl.pre.spec.3 | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec
-      scp /root/rpmbuild/SPECS/${ORG}.{{ project }}.${MYPKG}.scl.spec root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
-    
+      SPECFILE=/root/rpmbuild/SPECS/{organisation}-{project}.${MYPKG}.spec
+      SCLFILEPRE=/tmp/{organisation}-{project}.${MYPKG}.scl.spec.1
+      SCLFILE=/root/rpmbuild/SPECS/{organisation}-{project}.${MYPKG}.scl.spec
+      cat dist/*.spec > ${SPECFILE}
+      spec2scl ${SPECFILE} > ${SCLFILEPRE1}
+
+      awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/root#'\" INSTALLED_FILES " ; next }1' ${SCLFILEPRE}     \
+                                    | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #'                           \
+                                    | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE"                             \
+                                    | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > ${SPECFILE}
+      rm -f ${SCLFILEPRE}
+      scp ${SPECFILE} root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
+
       cd .. >/dev/null 2>&1
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
       scp  /root/rpmbuild/SOURCES/$MYPKG.tar.gz root@repos.pip2scl.dk:/usr/share/nginx/html/SOURCES >/dev/null 2>&1
