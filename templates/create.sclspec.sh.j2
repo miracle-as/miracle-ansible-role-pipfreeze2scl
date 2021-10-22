@@ -196,9 +196,9 @@ do
         echo "rpmbuild -ba /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec  --define \"scl {{ organisation }}-{{ project }}\" >/dev/null 2>&1" >> $SCRIPT
         echo "if [[ $? == 0 ]];" >> $SCRIPT
         echo "then" >> $SCRIPT
-        echo "  echo \"\`date\`: met keystone package build with python3\"" >> $SCRIPT
+        echo "  echo \"\`date\`: {{ organisation }} {{ project }} package build with python3\"" >> $SCRIPT
         echo "else" >> $SCRIPT
-        echo "  echo \"\`date\`: met keystone package build failled with python3\"" >> $SCRIPT
+        echo "  echo \"\`date\`: {{ organisation }} {{ project }} package build failled with python3\"" >> $SCRIPT
         echo "  exit 1" >> $SCRIPT
         echo "fi" >> $SCRIPT
         echo ""  >> $SCRIPT
