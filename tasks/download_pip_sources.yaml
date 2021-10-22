@@ -53,11 +53,13 @@
   become: yes
   lineinfile:
     path: /opt/requirements.txt
-    line: 'Added Line 1'
+    line: {{ package }}
   loop:
     - pip==21.3
     - setuptools==58.0.4
     - virtualenv==20.8.1
+  loop_control:
+    loop_var: package
 
 - name: "build_rpms | download sources"
   ansible.builtin.shell: /var/lib/venv/bin/python /usr/local/bin/pip-downloader.py
