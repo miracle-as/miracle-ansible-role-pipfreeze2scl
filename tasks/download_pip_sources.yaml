@@ -23,17 +23,9 @@
     group: root
     mode: '0755'
 
-- name: " build_virtual_environments | Build a virtual environment face 1 init virtual env  ({{ project }} - {{ version }})"
-  pip:
-    name: pip
-    virtualenv: '/var/lib/venv'
-    state: latest
-  become: True
-
 - name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ project }} - {{ version }})"
   pip:
     name: ['spec2scl', 'requests','setuptools-rust', 'wheel', 'requirements-parser']
-    virtualenv: '/var/lib/venv'
     state: latest
   become: True
 
@@ -57,7 +49,6 @@
   with_items:
     - "pip==21.3"
     - "setuptools==58.0.4"
-    - "virtualenv==20.8.1"
 
 - name: "build_rpms | download sources"
   ansible.builtin.shell: /var/lib/venv/bin/python /usr/local/bin/pip-downloader.py
