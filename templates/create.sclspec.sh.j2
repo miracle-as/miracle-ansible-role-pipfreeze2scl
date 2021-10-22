@@ -161,6 +161,8 @@ do
                                     | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > ${SPECFILE}
       rm -f ${SCLFILEPRE}
       scp ${SPECFILE} root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
+      scp ${SCLFILE} root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
+
 
       cd .. >/dev/null 2>&1
       tar -czf /root/rpmbuild/SOURCES/$MYPKG.tar.gz $MYPKG
@@ -178,7 +180,7 @@ do
         echo "#!/usr/bin/env bash" > $SCRIPT
         echo "" >> $SCRIPT
         echo "mkdir /root/rpmbuild/SPECS >/dev/null 2>&1" >> $SCRIPT
-        echo "wget -O /root/rpmbuild/SPECS/{{ organisation}}.{{ project }}.${MYPKG}.scl.spec http://repos.pip2scl.dk/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec >/dev/null 2>&1" >> $SCRIPT
+        echo "wget -O $SCLFILE  http://repos.pip2scl.dk/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec >/dev/null 2>&1" >> $SCRIPT
         echo "if [[ $? == 0 ]];" >> $SCRIPT
         echo "then" >> $SCRIPT
         echo "  echo \"\`date\`: Spec file copied\" " >> $SCRIPT
@@ -196,7 +198,7 @@ do
         echo "  exit 1" >> $SCRIPT
         echo "fi" >> $SCRIPT
         echo "" >> $SCRIPT
-        echo "rpmbuild -ba /root/rpmbuild/SPECS/{{ organisation }}.{{ project }}.${MYPKG}.scl.spec  --define \"scl {{ organisation }}-{{ project }}\" >/dev/null 2>&1" >> $SCRIPT
+        echo "rpmbuild -ba ${SCLFILE} --define \"scl {{ organisation }}-{{ project }}\" >/dev/null 2>&1" >> $SCRIPT
         echo "if [[ $? == 0 ]];" >> $SCRIPT
         echo "then" >> $SCRIPT
         echo "  echo \"\`date\`: {{ organisation }} {{ project }} package build with python3\"" >> $SCRIPT
