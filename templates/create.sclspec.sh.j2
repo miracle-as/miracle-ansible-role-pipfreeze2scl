@@ -149,11 +149,11 @@ do
       MYVER=`echo $MYPKG | rev | awk -F"-" '{ print $1 }' |rev` 
       MYNAME=`echo $MYPKG | awk -F"-${MYVER}" '{ print $1 }'`
       echo "$MYNAME;$MYVER" >> $DEPENDECIES
-      SPECFILE=/root/rpmbuild/SPECS/{organisation}-{project}.${MYPKG}.spec
-      SCLFILEPRE=/tmp/{organisation}-{project}.${MYPKG}.scl.spec.1
-      SCLFILE=/root/rpmbuild/SPECS/{organisation}-{project}.${MYPKG}.scl.spec
+      SPECFILE=/root/rpmbuild/SPECS/{{ organisation }}-{{ project }}.${MYPKG}.spec
+      SCLFILEPRE=/tmp/{{ organisation }}-{{ project }}.${MYPKG}.scl.spec.1
+      SCLFILE=/root/rpmbuild/SPECS/{{ organisation }}-{{ project }}.${MYPKG}.scl.spec
       cat dist/*.spec > ${SPECFILE}
-      spec2scl ${SPECFILE} > ${SCLFILEPRE1}
+      spec2scl ${SPECFILE} > ${SCLFILEPRE}
 
       awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/root#'\" INSTALLED_FILES " ; next }1' ${SCLFILEPRE}     \
                                     | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #'                           \
