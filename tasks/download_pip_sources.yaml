@@ -51,7 +51,14 @@
     - "setuptools==58.0.4"
 
 - name: "build_rpms | download sources"
-  ansible.builtin.shell: /var/lib/venv/bin/python /usr/local/bin/pip-downloader.py
+  ansible.builtin.shell: pip3 intall --upgade pip 
+  args:
+    chdir: /opt
+  become: True
+
+
+- name: "build_rpms | download sources"
+  ansible.builtin.shell: python3 /usr/local/bin/pip-downloader.py
   args:
     chdir: /opt
   become: True
