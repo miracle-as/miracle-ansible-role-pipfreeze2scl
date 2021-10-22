@@ -40,7 +40,7 @@
 
 #- name: "build_rpms | Create requirements file"
 #  shell: "/var/lib/openstack/venv/{{ project }}/{{ version }}/venv/bin/pip freeze > /var/lib/openstack/venv/{{ project }}/{{ version }}/requirements.txt"
-- name: Download Tomcat using get_url
+- name: Download requirements 
   become: yes
   get_url:
     url: "{{ requirementsfile }}"
@@ -48,6 +48,20 @@
     mode: 0755
     group: root
     owner: root
+
+- name: Download requirements add 
+  become: yes
+  template:
+    src: requirements.txt.add.j2
+    dest: /opt/requirements.txt.add
+    mode: 0755
+    group: root
+    owner: root
+
+- name: Add extra requirements
+  become: yes
+  shell: sed -r  /opt/requirements.txt /opt/requirements.txt.add
+
 
 - name: "build_rpms | download sources"
   ansible.builtin.shell: /var/lib/venv/bin/python /usr/local/bin/pip-downloader.py
