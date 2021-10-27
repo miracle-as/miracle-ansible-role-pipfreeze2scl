@@ -199,7 +199,7 @@ do
         echo "  exit 1" >> $SCRIPT
         echo "fi" >> $SCRIPT
         echo "" >> $SCRIPT
-        echo "rpmbuild -ba ${SCLFILE} --define \"scl {{ organisation }}-{{ project }}\" >/dev/null 2>&1" >> $SCRIPT
+        echo "rpmbuild -ba ${SCLFILE} -D 'debug_package %{nil}' --define \"scl {{ organisation }}-{{ project }}\" >/dev/null 2>&1" >> $SCRIPT
         echo "if [[ $? == 0 ]];" >> $SCRIPT
         echo "then" >> $SCRIPT
         echo "  echo \"\`date\`: {{ organisation }} {{ project }} package build with python3\"" >> $SCRIPT
