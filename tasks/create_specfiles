@@ -35,6 +35,6 @@
   become: True
 
 - name: create_specfiles | run the builder script
-  shell: /usr/local/bin/create.sclspec.sh
+  shell: echo /usr/local/bin/create.sclspec.sh
   become: True
   
