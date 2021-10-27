@@ -159,7 +159,7 @@ do
       awk '/record=INSTALLED_FILES/ { print; print "sed -i \"'s#^#/opt/{{ organisation }}/{{organisation}}-{{ project }}/root#'\" INSTALLED_FILES " ; next }1' ${SCLFILEPRE}     \
                                     | sed 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/{{ organisation }}/{{ organisation }}-{{ project }}/root #'                           \
                                     | sed "s#Source0:#Source0: http://repos.pip2scl.dk/SOURCES/${MYPKG}.tar.gz\nDELETELINE#"  |grep -v "^DELETELINE"                             \
-                                    | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > ${SPECFILE}
+                                    | sed "s#setup -n #setup -n ${MYPKG}\nDELETELINE#" |grep -v "^DELETELINE" > ${SCLFILE}
       rm -f ${SCLFILEPRE}
       scp ${SPECFILE} root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
       scp ${SCLFILE} root@repos.pip2scl.dk:/usr/share/nginx/html/SPECS >/dev/null 2>&1
