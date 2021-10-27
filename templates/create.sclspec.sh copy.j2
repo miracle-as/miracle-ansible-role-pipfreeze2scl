@@ -172,7 +172,7 @@ do
       STATUS="build_{{ organisation }}_{{ project }}.$MYPKG.scl.status"
       if [[ -f $STATUS ]];
       then 
-        cat $STATUS |grep "OK"
+        cat $STATUS |grep "OKii"
         if [[ $? == 0 ]];
         then
           add_line_html  "`date`: {{ organisation }} {{ project }} script already created and executed ok script for $MYPKG"
