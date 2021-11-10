@@ -1,0 +1,11 @@
+for INSTALLED_FILE in `cat INSTALLED_FILES`
+do
+	if [[ -f ${RPM_BUILD_ROOT}/${INSTALLED_FILE} ]];
+	then
+		echo $INSTALLED_FILE >> INSTALLED_FILES.new
+	fi
+done
+
+mv INSTALLED_FILES.new INSTALLED_FILES
+
+
