@@ -1,0 +1,39 @@
+- name:  sclbuilder | copy scl builder script 
+  ansible.builtin.template:
+    src: sclbuilder.sh.j2
+    dest: /usr/local/bin/sclbuilder.sh
+    mode: 755
+    force: yes
+  become: True
+
+- name:  create_specfiles | create a tailored metaspecfile
+  ansible.builtin.template:
+    src: metascl.spec.j2
+    dest: /root/{{ organisation }}.{{ project }}.meta.scl.spec
+    mode: 644
+    force: yes
+  become: True
+
+- name:  create_specfiles | create a tailored metaspecfile for {{ project }}
+  ansible.builtin.template:
+    src: project.specfile.spec.j2
+    dest: /root/{{ organisation }}.{{ project }}.project.spec
+    mode: 644
+    force: yes
+  become: True
+
+- name: create_specfiles | Touch /root/rpmbuild/SOURCES/LICENSE
+  shell: touch /root/rpmbuild/SOURCES/LICENSE
+  become: True
+
+
+- name: create project directory {{ project_dir }}
+  file: state=directory path={{ project_dir }}
+
+- name: download sources
+  get_url: url={{ requirementfile }} dest={{ project_dir }}/{{ project }}.requirement.txt
+
+- name: create_specfiles | run the builder script
+  shell: /usr/local/bin/create.sclspec.sh
+  become: True
+  
