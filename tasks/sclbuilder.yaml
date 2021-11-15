@@ -49,6 +49,10 @@
 - name: download sources
   get_url: url={{ requirementfile }} dest={{ project_dir }}/{{ project }}.requirement.txt
 
+- name: create_specfiles | update pip
+  shell: pip3 install --upgrade pip
+  become: True
+  
 - name: create_specfiles | run the builder script
   shell: /usr/local/bin/create.sclspec.sh
   become: True
