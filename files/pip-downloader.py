@@ -88,6 +88,7 @@ def download_best_package(package_name, specifier='', path=PACKAGES_DIR):
         os.rename(extracted, extracted.lower())
     else:
         dest = f'{path}/{file_split}'
+        print(f'Downloading: {url_split}')
 
 
 
