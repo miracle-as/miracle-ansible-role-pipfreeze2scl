@@ -35,6 +35,7 @@
     - "libffi-devel"
     - "createrepo"
     - "wget"
+    - "rsync"
   become: True
 
 
