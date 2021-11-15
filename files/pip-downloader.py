@@ -73,7 +73,7 @@ def download_best_package(package_name, specifier='', path=PACKAGES_DIR):
     name, version, url = get_best_package(package_name, specifier)
     url_split = url.split('#sha256')[0]
     file_split = url_split.split('/')[-1]
-    dest = f'{path}/{name}/{file_split}'
+    dest = f'{path}/{file_split}'
 
     if not os.path.exists(f'{path}/{name}'):
         os.makedirs(f'{path}/{name}')
@@ -86,6 +86,9 @@ def download_best_package(package_name, specifier='', path=PACKAGES_DIR):
         shutil.unpack_archive(dest, f'{path}/{package_name}')
         extracted = dest.rstrip('.tar.gz')
         os.rename(extracted, extracted.lower())
+    else:
+        dest = f'{path}/{file_split}'
+
 
 
 
