@@ -17,6 +17,7 @@
     name:  '{{ item  }}'
     state: present
   with_items:
+    - "epel-release"
     - "git"
     - "python3-pip"
     - "python3-devel"
@@ -38,9 +39,7 @@
     - "rsync"
     - "redis"
   become: True
-
-
-      #    - "liberasurecode-devel"
+  
 - name: create dir
   ansible.builtin.file:
     path: /root/.ssh
