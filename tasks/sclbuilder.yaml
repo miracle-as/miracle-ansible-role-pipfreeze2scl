@@ -6,6 +6,22 @@
     force: yes
   become: True
 
+
+- name: build_rpms | create a pip downloader
+  ansible.builtin.copy:
+    src: pip-downloader.py
+    dest: /usr/local/bin/pip-downloader.py
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: " build_virtual_environments | Build a virtual environment face 2 : update pip ({{ project }} - {{ version }})"
+  pip:
+    name: ['spec2scl', 'requests','setuptools-rust', 'wheel', 'requirements-parser']
+    state: latest
+  become: True
+
+
 - name:  create_specfiles | create a tailored metaspecfile
   ansible.builtin.template:
     src: metascl.spec.j2

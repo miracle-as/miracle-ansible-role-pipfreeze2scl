@@ -36,6 +36,7 @@
     - "createrepo"
     - "wget"
     - "rsync"
+    - "redis"
   become: True
 
 
