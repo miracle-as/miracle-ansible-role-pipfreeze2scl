@@ -30,6 +30,7 @@
     - "zlib-devel"
     - "rpm-build"
     - "tree"
+    - "help2man"
     - "scl-utils-build"
     - "scl-utils"
     - "libffi-devel"
@@ -38,7 +39,7 @@
     - "rsync"
     - "redis"
   become: True
-
+  
 - name: create dir
   ansible.builtin.file:
     path: /root/.ssh

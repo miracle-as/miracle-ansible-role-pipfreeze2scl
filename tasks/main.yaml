@@ -1,6 +1,5 @@
 - include: redhat.yaml
 - include: sclmetapackage.yml
-
 - include: sclbuilder.yaml
 
 #- include: build_virtual_environments.yaml
