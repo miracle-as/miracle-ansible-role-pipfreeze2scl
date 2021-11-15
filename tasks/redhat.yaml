@@ -69,3 +69,9 @@
     group: root
     mode: '0600'
   become: True
+
+- name: Start service httpd, if not started
+  ansible.builtin.service:
+    name: redis
+    state: started
+  become: true
