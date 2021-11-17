@@ -6,6 +6,14 @@
     force: yes
   become: True
 
+- name:  sclbuilder | copy mergerfile
+  ansible.builtin.template:
+    src: mergefiles.sh.j2
+    dest: /usr/local/bin/mergefiles.sh
+    mode: 755
+    force: yes
+  become: True
+
 
 - name: build_rpms | create a pip downloader
   ansible.builtin.copy:

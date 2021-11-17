@@ -41,6 +41,9 @@
     - "openssl-devel"
     - "python3-sphinx"
     - "python3.8"
+    - "libgsasl-devel"
+    - "openldap-devel"
+
   become: True
   
 - name: create dir
