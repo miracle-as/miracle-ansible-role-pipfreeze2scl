@@ -40,6 +40,7 @@
     - "redis"
     - "openssl-devel"
     - "python3-sphinx"
+    - "python3.8"
   become: True
   
 - name: create dir
