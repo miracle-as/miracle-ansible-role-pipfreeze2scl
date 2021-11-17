@@ -43,6 +43,11 @@
     - "python3.8"
     - "libgsasl-devel"
     - "openldap-devel"
+    - libgsasl-devel
+    - libxml2-devel
+    - xmlsec1-openssl-devel
+    - libtool-ltdl-devel
+
 
   become: True
   
