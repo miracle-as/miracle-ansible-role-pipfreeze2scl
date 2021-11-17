@@ -38,6 +38,8 @@
     - "wget"
     - "rsync"
     - "redis"
+    - "openssl-devel"
+    - "python3-sphinx"
   become: True
   
 - name: create dir
