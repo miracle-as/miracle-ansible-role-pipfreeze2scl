@@ -61,8 +61,13 @@
     mode: '0700'
   become: True
 
-- name: Copy key file to root
-  shell: cp /home/vagrant/scldistro /root/.ssh/id_rsa
+- name: Copy ssh key to servers
+  ansible.builtin.copy:
+    src: ~/.ssh/scldistro
+    dest: /root/.ssh/id_rsa
+    owner: root
+    group: root
+    mode: '0600'
   become: True
 
 - name: Set permissions
