@@ -928,8 +928,8 @@ build_scl ()
 	
 	NAMEINTAR=`tar tvf $BUILDDIR/SOURCES/${NAME}-${VERSION}.tar.gz |head -1 |awk '{ print $6 }' |sed 's(/(('`
 	wget -O $BUILDDIR/VERSPEC/${NAME}-${VERSION}.verified.spec   $VERSPECURL >/dev/null 2>&1
-	logme "Our verified SPEC is $BUILDDIR/VERSPEC/${NAME}-${VERSION}.verified.spec"
-
+	logme "Our verified SPEC is /root/rpmbuild/VERSPEC/python-dateutil-2.8.1.verified.spec
+		ls -l  /root/rpmbuild/VERSPEC/python-dateutil-2.8.1.verified.spec
 
         ##########################################################
         # check if a handcrafted hardcoded spec file exists
