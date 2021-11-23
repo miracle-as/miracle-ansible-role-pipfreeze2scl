@@ -68,7 +68,3 @@
   shell: pip3 install --upgrade pip
   become: True
   
-- name: create_specfiles | run the builder script
-  shell: /usr/local/bin/create.sclspec.sh
-  become: True
-  
