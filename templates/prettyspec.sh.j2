@@ -9,9 +9,10 @@ do
 done
 
 	
-for INSTALLED_FILE in `cat INSTALLED_FILES | tr ' ' '¤' `
+for INSTALLED_FILE in `cat INSTALLED_FILES |tr ' ' '¤' |grep -v "__pycache__" `
 do
-	if [[ -f ${RPM_BUILD_ROOT}/${INSTALLED_FILE} ]];
+	MYFILE=`echo $INSTALLED_FILE  | tr '¤' ' '`
+	if [[ -f ${RPM_BUILD_ROOT}/${MYFILE} ]];
 	then
 		echo $INSTALLED_FILE | tr '¤' ' ' >> INSTALLED_FILES.new
 	fi

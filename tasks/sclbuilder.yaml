@@ -14,6 +14,13 @@
     force: yes
   become: True
 
+- name:  sclbuilder | copy prettyspec.sh.j2
+  ansible.builtin.template:
+    src: prettyspec.sh.j2
+    dest: /usr/local/bin/prettyspec.sh.j2
+    mode: 755
+    force: yes
+  become: True
 
 - name: build_rpms | create a pip downloader
   ansible.builtin.copy:
