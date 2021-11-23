@@ -1125,7 +1125,7 @@ do
 	SPEC=`redis-cli get $MYSPEC 2>&1`
 	SPECNAME=`echo $SPEC| rev |awk -F'/' '{ print $1 }' |rev| sed 's/\\.spec/\\.verified\\.spec/'`
         CURL=`curl "http://repos.pip2scl.dk/SPECS/${NAME}-${VERSION}.hardcoded.scl.spec"  2>/dev/null |grep "The page you are looking for is not found" `
-        if [[ $? != 0 ]];
+        if [ $? != 0 ] && [ $PERSIST != "force" ] ;
         then
                 logme "scl Spec file is hardcoded"
 		LOOP=0
