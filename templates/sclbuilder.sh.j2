@@ -37,8 +37,8 @@ PYCMD="python3"
 PRETTYSPEC="/usr/local/bin/prettyspec.sh"
 EXTENTION=""
 FILE=""
-LASTBUILD="${BUILDDIR}/OUTPUT/${NAME}-${VERSION}.build.log
-INDEX="${BUILDDIR}/OUTPUT/${NAME}-${VERSION}.build.html
+LASTBUILD="${BUILDDIR}/OUTPUT/${NAME}-${VERSION}.build.log"
+INDEX="${BUILDDIR}/OUTPUT/${NAME}-${VERSION}.build.html"
 
 
 usage ()
@@ -928,7 +928,7 @@ build_scl ()
 	
 	NAMEINTAR=`tar tvf $BUILDDIR/SOURCES/${NAME}-${VERSION}.tar.gz |head -1 |awk '{ print $6 }' |sed 's(/(('`
 	wget -O $BUILDDIR/VERSPEC/${NAME}-${VERSION}.verified.spec   $VERSPECURL >/dev/null 2>&1
-	logme "Our verified SPEC is /root/rpmbuild/VERSPEC/python-dateutil-2.8.1.verified.spec
+	logme "Our verified SPEC is /root/rpmbuild/VERSPEC/python-dateutil-2.8.1.verified.spec"
 		ls -l  /root/rpmbuild/VERSPEC/python-dateutil-2.8.1.verified.spec
 
         ##########################################################
@@ -998,6 +998,7 @@ build_scl ()
                 	grep -P "Sort the filelist so that directories appear before files. This avoids" $SCLFILEPRE -B100000 |grep -v "Sort the filelist so that directories appear before files. This avoids" > PART1
                 	echo 'sed -i "s(//(/(" INSTALLED_FILES' >> PART1
                 	grep -P "^EOF$" $SCLFILEPRE -A100000 |grep -v "^EOF$" > PART2
+
 
                 	cat PART1 PART2 |grep -v " DIRS FILES" |grep -v /usr/share/man/man1/django-admin.1.gz  |grep  -v '%doc' > $SCLFILEPRE
         	fi
