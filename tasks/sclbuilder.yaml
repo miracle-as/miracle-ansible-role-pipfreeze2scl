@@ -17,7 +17,7 @@
 - name:  sclbuilder | copy mandatory specfile add.j2
   ansible.builtin.template:
     src: mandatory_after_setup.add.j2
-    dest: mandatory_after_setup.add
+    dest: /usr/local/bin/mandatory_after_setup.add
     mode: 755
     force: yes
   become: True
