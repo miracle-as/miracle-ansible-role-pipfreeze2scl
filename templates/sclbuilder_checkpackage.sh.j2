@@ -190,7 +190,6 @@ checkpackage ()
 	sed -i "s/^%{__python} /$PYCMD /" $SPEC
 
 	NAMEINSPEC=`grep "define name " $SPEC |awk '{ print $2 }' `
-	SPECDST="/root/rpmbuild/SPECS/${NAME}-${VERSION}.spec"
 	logme "SPEC $SPEC created and saving it"
 	###################
 	cp $SPEC $ORGSPECFILE
