@@ -14,10 +14,18 @@
     force: yes
   become: True
 
+- name:  sclbuilder | copy mandatory specfile add.j2
+  ansible.builtin.template:
+    src: mandatory_after_setup.add.j2
+    dest: mandatory_after_setup.add
+    mode: 755
+    force: yes
+  become: True
+
 - name:  sclbuilder | copy prettyspec.sh.j2
   ansible.builtin.template:
     src: prettyspec.sh.j2
-    dest: /usr/local/bin/prettyspec.sh.j2
+    dest: /usr/local/bin/prettyspec.sh
     mode: 755
     force: yes
   become: True
