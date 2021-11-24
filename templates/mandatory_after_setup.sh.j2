@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# if it doesnt exist
+SCLSPECFILE=$1
+if [[ ! -f $SPECFILE ]];
+then
+        exit 1
+fi
+
+# if it isn't a spec file
+grep '%{?scl:%scl_package %{name}}' $SCLSPECFILE >/dev/null 2>&1
+if [[ $? != 0 ]];
+then
+        exit 2
+fi
+
+#if it alread is added
+grep "This must be after setup in the scl spec files" $SCLSPECFILE >/dev/null 2>&1
+if [[ $? != 0 ]];
+then
+        exit 3
+fi
+
+
+
+
+INSTALLLINE=`grep "setup.py install" $SCLSPECFILE`
+PART1="/tmp/specfilepart1"
+PART2="/tmp/specfilepart2"
+rm $PART1 >/dev/null 2>&1
+rm $PART2 >/dev/null 2>&1
+grep -P "$INSERTAFTER" $SPECFILE -B100000 |grep -v "^$INSERTAFTER" > $PART1
+grep -P "$INSERTAFTER" $SPECFILE -A100000 |grep -v "^%INSERTAFTER" > $PART2
+
+cat $PART1
+echo $INSTALLLINE
+cat $ADDON
+cat $PART2
+
+rm $PART1 >/dev/null 2>&1
+rm $PART2 >/dev/null 2>&1
+exit 0
