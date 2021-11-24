@@ -19,7 +19,7 @@
     - sclbuilder_checkpackage
     - sclbuilder_buildrpm
     - sclbuilder_buildscl
-
+    - setbuildenv
 
 
 - name:  sclbuilder | copy mergerfile

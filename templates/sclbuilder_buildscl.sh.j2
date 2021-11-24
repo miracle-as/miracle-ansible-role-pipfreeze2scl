@@ -39,6 +39,7 @@ EXTENTION=""
 FILE=""
 LASTBUILD="${BUILDDIR}/OUTPUT/${NAME}-${VERSION}.build.log"
 INDEX="${BUILDDIR}/OUTPUT/${NAME}-${VERSION}.build.html"
+VERSPEC=
 
 
 usage ()
@@ -90,21 +91,15 @@ build_scl ()
 	URL=`redis-cli get $MYURL `
 	
 	NAMEINTAR=`tar tvf $BUILDDIR/SOURCES/${NAME}-${VERSION}.tar.gz |head -1 |awk '{ print $6 }' |sed 's(/(('`
-	wget -O $BUILDDIR/VERSPEC/${NAME}-${VERSION}.verified.spec   $VERSPECURL >/dev/null 2>&1
-	logme "Our verified SPEC is /root/rpmbuild/VERSPEC/python-dateutil-2.8.1.verified.spec"
-		ls -l  /root/rpmbuild/VERSPEC/python-dateutil-2.8.1.verified.spec
+	wget -O $VERSPEC   $VERSPECURL >/dev/null 2>&1
+    logme "curl \"http://repos.pip2scl.dk/SPECS/${NAME}-${VERSION}.hardcoded.scl.spec\""
 
-        ##########################################################
-        # check if a handcrafted hardcoded spec file exists
-        ###########################################################
-
-        logme "curl \"http://repos.pip2scl.dk/SPECS/${NAME}-${VERSION}.hardcoded.scl.spec\""
 	CURL=`curl "http://repos.pip2scl.dk/SPECS/${NAME}-${VERSION}.hardcoded.scl.spec" 2>/dev/null|grep "The page you are looking for is not found"`
-        if [[ $? != 0 ]];
-        then
-               	logme "scl Spec file is hardcoded"
-               	CURL=`curl "http://repos.pip2scl.dk/SPECS/${NAME}-${VERSION}.hardcoded.scl.spec" >$SCLFILE 2>/dev/null`
-               	SPECFILECREATE="HARD"
+    if [[ $? != 0 ]];
+    then
+       	logme "scl Spec file is hardcoded"
+       	CURL=`curl "http://repos.pip2scl.dk/SPECS/${NAME}-${VERSION}.hardcoded.scl.spec" >$SCLFILEHARD 2>/dev/null`
+       	SPECFILECREATE="HARD"
 	else
 		logme "Create spec file"
 		spec2scl  $BUILDDIR/VERSPEC/${NAME}-${VERSION}.verified.spec > $SCLFILEPRE  2>/dev/null
@@ -123,6 +118,7 @@ build_scl ()
         	sed -i 's#root=$RPM_BUILD_ROOT#root=$RPM_BUILD_ROOT/opt/miracle/miracle-awx/root#'  $SCLFILEPRE
         	sed -i "s#%setup.*#%setup -n ${NAMEINTAR}#" $SCLFILEPRE
 		logme "mandatory_after_setup.sh $SCLFILEPRE"
+
 		mandatory_after_setup.sh $SCLFILEPRE > $SCLFILEPRE.added
 		if [[ $? == 0 ]];
 		then
