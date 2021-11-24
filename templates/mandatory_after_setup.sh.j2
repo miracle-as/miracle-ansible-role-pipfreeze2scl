@@ -18,7 +18,7 @@ fi
 cat $SCLSPECFILE |grep "This must be after setup in the scl spec files" >/dev/null
 if [[ $? == 0 ]];
 then
-        exit 3
+        exit 0
 fi
 INSTALLPOINT="python3 setup.py install"
 INSTALLLINE=`grep "$INSTALLPOINT" $SCLSPECFILE`
