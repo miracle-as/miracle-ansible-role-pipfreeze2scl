@@ -6,6 +6,22 @@
     force: yes
   become: True
 
+
+- name:  sclbuilder | copy scl builder script 
+  ansible.builtin.template:
+    src: "{{ item }}.sh.j2"
+    dest: "/usr/local/bin/{{ item }}.sh"
+    mode: 755
+    force: yes
+  become: True
+  loop: 
+    - sclbuilder_download
+    - sclbuilder_checkpackage
+    - sclbuilder_buildrpm
+    - sclbuilder_buildscl
+
+
+
 - name:  sclbuilder | copy mergerfile
   ansible.builtin.template:
     src: mergefiles.sh.j2
