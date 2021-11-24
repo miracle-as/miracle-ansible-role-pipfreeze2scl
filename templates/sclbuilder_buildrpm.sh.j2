@@ -4,42 +4,7 @@ CMD=$0
 PACKAGE=$1
 PERSIST=$2
 
-NAME=`echo $PACKAGE | awk -F'==' '{ print $1 }'`
-VERSION=`echo $PACKAGE | awk -F'==' '{ print $2 }'`
-SCL=$2
-QUIET="no"
-BUILDDIR="/root/rpmbuild"
-BUILDOUT="$BUILDDIR/OUTPUT"
-BUILDOUT="$BUILDDIR/OUTPUT"
-AUTOPATCHDIR="$BUILDDIR/AUTOPATCH"
-mkdir $AUTOPATCHDIR >/dev/null 2>&1 || touch AUTOPATCHDIR
-MYAUTOPATCH="autopath:$AUTOPATCHDIR/$NAME-$VERSION.patch.sh"
-AUTOPATCH="$AUTOPATCHDIR/$NAME-$VERSION.patch.sh"
-FAILEDRPMS="$BUILDDIR/OUTPUT/failed.txt"
-mkdir $BUILDOUT >/dev/null 2>&1 || touch $BUILDOUT
-touch $FAILEDRPMS
-MYCRC="crc:$PACKAGE"
-MYEXT="ext:${PACKAGE}"
-MYDIRKEY="pkgdir:${PACKAGE}"
-MYKEY="filename:${PACKAGE}"
-MYRPM="rpm:${PACKAGE}"
-MYSPEC="specfile:${PACKAGE}"
-MYVERSPEC="verifiedspecfile:${PACKAGE}"
-MYRPMSPEC="specfile:RPM:${PACKAGE}"
-MYSRPM="rpms:${PACKAGE}"
-MYSUM="sum:${PACKAGE}"
-MYURL="url:${PACKAGE}"
-MYSRCNAME="sourcefilename:${PACKAGE}"
-MYERR="error:{$PACKAGE}"
-MYNIT="NIT:${PACKAGE}"
-NIT=""
-PYCMD="python3"
-PRETTYSPEC="/usr/local/bin/prettyspec.sh"
-EXTENTION=""
-FILE=""
-LASTBUILD="${BUILDDIR}/OUTPUT/${NAME}-${VERSION}.build.log"
-INDEX="${BUILDDIR}/OUTPUT/${NAME}-${VERSION}.build.html"
-
+source /usr/local/bin/setbuildenv.sh
 
 usage ()
 {
@@ -82,14 +47,6 @@ lastbuild ()
 build_rpm ()
 {
 	logme "We are ready to build"
-        NAME=`echo $PACKAGE | awk -F'==' '{ print $1 }'`
-        VERSION=`echo $PACKAGE | awk -F'==' '{ print $2 }'`
-        MYKEY="filename:${PACKAGE}"
-        MYURL="url:${PACKAGE}"
-        MYCRC="crc:$PACKAGE"
-        MYDIRKEY="pkgdir:${PACKAGE}"
-	MYSPEC="specfile:${PACKAGE}"
-	SPEC=`redis-cli get $MYSPEC`
 	logme "My spec file is : $SPEC"
 	if [[ -f $SPEC ]];
 	then
