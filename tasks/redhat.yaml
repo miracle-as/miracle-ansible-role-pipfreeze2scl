@@ -88,6 +88,6 @@
   become: true
 
 - name: Correct python3
-  community.general.alternatives:
+  alternatives:
     name: python3
     path: /usr/bin/python3.8
