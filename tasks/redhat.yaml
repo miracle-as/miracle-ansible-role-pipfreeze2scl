@@ -2,12 +2,6 @@
 # What to be done om redhat only
 ####################################################
 
-- name: ansible_role_build_ostack_components | Put SELinux in permissive mode, logging actions that would be blocked.
-  ansible.posix.selinux:
-    policy: targeted
-    state: permissive
-  become: True
-
 - name: Enable codeready-builder repository
   shell: subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
   become: True
